@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "48437600413",
+    "project_id": "control-car-project",
+    "storage_bucket": "control-car-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:48437600413:android:9f43f30dd7a67ec4323474",
+        "android_client_info": {
+          "package_name": "com.ctrcar.client_control_car"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "48437600413-mc2gu6j227efaehn2jg0c51pc8ak4ojn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ctrcar.client_control_car",
+            "certificate_hash": "6a01e80269d8595f346937ac8122ff9bd8770ddb"
+          }
+        },
+        {
+          "client_id": "48437600413-8qr6cibmsvrbtf2orcn4ikgrgpp6m2bv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8YrsmRR2aVcSLxQQg3wjPgpS1vvkLWuE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "48437600413-8qr6cibmsvrbtf2orcn4ikgrgpp6m2bv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "48437600413-g68frhcge0bj3i75t0aa9crcdqvludn3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ctrcar.clientProControlCar"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:48437600413:android:ee60de3d7066b9df323474",
+        "android_client_info": {
+          "package_name": "com.ctrcar.client_pro_control_car"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "48437600413-sg5dh3c5pjotfig6qth8odch4lo39613.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ctrcar.client_pro_control_car",
+            "certificate_hash": "a8521c9ef95fe9091b0b6de6236bcc04a61e9cb0"
+          }
+        },
+        {
+          "client_id": "48437600413-8qr6cibmsvrbtf2orcn4ikgrgpp6m2bv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8YrsmRR2aVcSLxQQg3wjPgpS1vvkLWuE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "48437600413-8qr6cibmsvrbtf2orcn4ikgrgpp6m2bv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "48437600413-g68frhcge0bj3i75t0aa9crcdqvludn3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ctrcar.clientProControlCar"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
