@@ -99,13 +99,7 @@ class _DiagnosticScreenState extends State<DiagnosticScreen> {
             },
             child: Image.asset("assets/icons/drawer.png")),
       ),
-      body: SafeArea(
-        child: SizedBox(
-          height: sizeHeight(context: context),
-          width: sizeWidth(context: context),
-          child: MultiStepForm(),
-        ),
-      ),
+      body: MultiStepForm(),
       bottomNavigationBar: StreamBuilder<QuerySnapshot>(
       stream: firebaseFirestore.collection("notification").snapshots(),
       builder: (context, snapshotNotif) {
@@ -189,9 +183,12 @@ class _MultiStepFormState extends State<MultiStepForm> {
     "kilometrage" : null,
     "immatriculation" : null,
     "numeroVin" : null ,
+    "CertifImmat" : null,
     "b64CertifImmat" : null,
     "b64CertifNonGage" : null,
+    "controleTech" : null,
     "b64ControleTech" : null,
+    "carnetEntret" : null,
     "b64CarnetEntret" : null,
     "AutreDocCommentair" : null,
     "b64AutreDoc" : null
@@ -203,9 +200,12 @@ class _MultiStepFormState extends State<MultiStepForm> {
   TextEditingController step1_immatController = TextEditingController();
   TextEditingController step1_kilomController = TextEditingController();
   TextEditingController step1_vinController = TextEditingController();
+  TextEditingController step1_certifImmatController = TextEditingController();
   TextEditingController step1_b64CertifImmatController = TextEditingController();
   TextEditingController step1_b64CertifNonGageController = TextEditingController();
+  TextEditingController step1_controleTechController = TextEditingController();
   TextEditingController step1_b64ControleTechController = TextEditingController();
+  TextEditingController step1_carnetEntretController = TextEditingController();
   TextEditingController step1_b64CarnetEntretController = TextEditingController();
   TextEditingController step1_AutreDocCommentairController = TextEditingController();
   TextEditingController step1_b64AutreDocController = TextEditingController();
@@ -248,19 +248,20 @@ class _MultiStepFormState extends State<MultiStepForm> {
   _getFormData() async {
     final prefs = await SharedPreferences.getInstance();
     final Step1 = decodeObject(prefs , 'Step1');
+
     setState(() {
-      step1_marqueController.text = Step1["marque"];
+      step1_marqueController.text = Step1["marque"]  ;
       step1_modeleController.text = Step1["modele"];
       step1_yearController.text = Step1["annee"];
       step1_immatController.text = Step1["kilometrage"];
       step1_kilomController.text = Step1["immatriculation"];
       step1_vinController.text = Step1["numeroVin"];
-      step1_b64CertifImmatController.text = Step1["b64CertifImmat"];
-      step1_b64ControleTechController.text = Step1["b64ControleTech"];
-      step1_AutreDocCommentairController.text = Step1["AutreDocCommentair"];
+      step1_b64CertifImmatController.text = Step1["b64CertifImmat"] ;
+      step1_b64ControleTechController.text = Step1["b64ControleTech"] ;
+      step1_AutreDocCommentairController.text = Step1["AutreDocCommentair"] ;
       step1_b64AutreDocController.text = Step1["b64AutreDoc"];
-      step1_b64CertifNonGageController.text = Step1["b64CertifNonGage"];
-      step1_b64CarnetEntretController.text = Step1["b64CarnetEntret"];
+      step1_b64CertifNonGageController.text = Step1["b64CertifNonGage"] ;
+      step1_b64CarnetEntretController.text = Step1["b64CarnetEntret"] ;
     });
   }
 
@@ -311,7 +312,9 @@ class _MultiStepFormState extends State<MultiStepForm> {
       // 1
       Step(
         title: Text('Documents') ,
+
         content: Form(
+
           key: _formKeys[_currentStep],
           child: Column(
             children: [
@@ -393,16 +396,67 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   step1["numeroVin"] = value!;
                 },
               ),
-              Column(
-                  children : [
-                    const Text(
-                        "Certificat d’immat",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "Certificat d'immat",
+                        style: gothicBold.copyWith(fontSize: 18),
+                      ),
                     ),
-                    InkWell(
+
+                    SizedBox(
+                      height: 30,
+
+                      child: ElevatedButton(
+                        onPressed: () {
+                          step1_certifImmatController.text = "oui";
+                          step1["CertifImmat"] = step1_certifImmatController.text;
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(Colors.grey),
+                        ),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            "OUI",
+                            style: gothicBold.copyWith(fontSize: 18, color: Colors.white),
+                          ),
+                        ),
+
+                      ),
+
+                    ),
+                    SizedBox(width: 10),
+
+                    SizedBox(
+                      height: 30,
+
+                      child: ElevatedButton(
+                        onPressed: () {
+                          step1_certifImmatController.text = "non";
+                          step1["CertifImmat"] = step1_certifImmatController.text;
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(Colors.grey),
+                        ),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            "Non",
+                            style: gothicBold.copyWith(fontSize: 18, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+
+                ),
+
+              ),
+              InkWell(
                       onTap: () async {
                         final ImagePicker _picker = ImagePicker();
                         final XFile? imgFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -417,8 +471,6 @@ class _MultiStepFormState extends State<MultiStepForm> {
                         }
                       },
                       child: const Text("Importer votre image"),
-                    )
-                  ],
               ),
               Column(
                 children : [
@@ -446,30 +498,163 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   ),
                 ],
               ),
-              Column(
-                children : [
-                  const Text("Contrôle Technique",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),),
-                  InkWell(
-                    onTap: () async {
-                      final ImagePicker _picker = ImagePicker();
-                      final XFile? imgFile = await _picker.pickImage(source: ImageSource.gallery);
-                      try {
-                        if (imgFile != null) {
-                          String base64Image = base64Encode(await imgFile.readAsBytes()!);
-                          step1_b64ControleTechController.text = base64Image;
-                          step1["b64ControleTech"] = step1_b64ControleTechController.text;
-                        }
-                      } catch (e) {
-                        print(e.toString());
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "Contrôle Technique",
+                        style: gothicBold.copyWith(fontSize: 18),
+                      ),
+                    ),
+
+                    SizedBox(
+                      height: 30,
+
+                      child: ElevatedButton(
+                        onPressed: () {
+                          step1_controleTechController.text = "valide";
+                          step1["controleTech"] = step1_controleTechController.text;
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(Colors.grey),
+                        ),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            "VALIDE",
+                            style: gothicBold.copyWith(fontSize: 18, color: Colors.white),
+                          ),
+                        ),
+
+                      ),
+
+                    ),
+                    SizedBox(width: 10),
+
+                    SizedBox(
+                      height: 30,
+
+                      child: ElevatedButton(
+                        onPressed: () {
+                          step1_controleTechController.text = "invalide";
+                          step1["controleTech"] = step1_controleTechController.text;
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(Colors.grey),
+                        ),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            "INVALIDE",
+                            style: gothicBold.copyWith(fontSize: 18, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+
+                    SizedBox(
+                      height: 30,
+
+                      child: ElevatedButton(
+                        onPressed: () {
+                          step1_controleTechController.text = "non";
+                          step1["controleTech"] = step1_controleTechController.text;
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(Colors.grey),
+                        ),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            "Non",
+                            style: gothicBold.copyWith(fontSize: 18, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+
+                ),
+
+              ),
+              InkWell(
+                  onTap: () async {
+                    final ImagePicker _picker = ImagePicker();
+                    final XFile? imgFile = await _picker.pickImage(source: ImageSource.gallery);
+                    try {
+                      if (imgFile != null) {
+                        String base64Image = base64Encode(await imgFile.readAsBytes()!);
+                        step1_b64ControleTechController.text = base64Image;
+                        step1["b64ControleTech"] = step1_b64ControleTechController.text;
                       }
-                    },
-                    child: Text("Importer votre image")
-                  )
-                ],
+                    } catch (e) {
+                      print(e.toString());
+                    }
+                  },
+                  child: Text("Importer votre image")
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "Carnet d’entretien",
+                        style: gothicBold.copyWith(fontSize: 18),
+                      ),
+                    ),
+
+                    SizedBox(
+                      height: 30,
+
+                      child: ElevatedButton(
+                        onPressed: () {
+                          step1_carnetEntretController.text = "oui";
+                          step1["carnetEntret"] = step1_carnetEntretController.text;
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(Colors.grey),
+                        ),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            "OUI",
+                            style: gothicBold.copyWith(fontSize: 18, color: Colors.white),
+                          ),
+                        ),
+
+                      ),
+
+                    ),
+                    SizedBox(width: 10),
+
+                    SizedBox(
+                      height: 30,
+
+                      child: ElevatedButton(
+                        onPressed: () {
+                          step1_carnetEntretController.text = "non";
+                          step1["carnetEntret"] = step1_carnetEntretController.text;
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(Colors.grey),
+                        ),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            "Non",
+                            style: gothicBold.copyWith(fontSize: 18, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+
+                ),
+
               ),
               Column(
                 children : [
