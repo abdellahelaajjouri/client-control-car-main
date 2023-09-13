@@ -23,6 +23,7 @@ import 'package:client_control_car/pages/historys/mes_commande_detail_page.dart'
 import 'package:client_control_car/pages/historys/mes_commande_page.dart';
 import 'package:client_control_car/pages/home/home_map_screen.dart';
 import 'package:client_control_car/pages/info_vehicule/info_vehicule_screen.dart';
+import 'package:client_control_car/pages/diagnostic/diagnostic_screen.dart';
 import 'package:client_control_car/pages/notification/notification_screen.dart';
 import 'package:client_control_car/pages/payment/add_card_payment_screen.dart';
 import 'package:client_control_car/pages/payment/payment_method_screen.dart';
@@ -50,6 +51,7 @@ class RouteHelper {
   static const String profilPage = '/profil-page';
   static const String notificationPage = '/notification-page';
   static const String infoVehiculePage = '/info-vehicule-page';
+  static const String diagnosticPage = '/diagnostic-page';
   static const String carteGriseHomePage = '/carte-grise-home-page';
   static const String addCarteGrisePage = '/add-carte-grise-page';
   static const String mesCommandesPage = '/mes-commandes-page';
@@ -62,7 +64,6 @@ class RouteHelper {
   static const String forgotPassPage = '/forgot-pass-page';
   static const String reinitialPassPage = '/reinitial-pass-page';
   static const String detailTicketPage = '/detail-ticket-page';
-
   static const String stripeCancelPage = '/payment-cancel-page';
   static const String stripeSuccessPage = '/payment-success-page';
   static const String stripeWebViewPage = '/payment-web-view-page';
@@ -96,6 +97,7 @@ class RouteHelper {
   static String getProfilRoute() => profilPage;
   static String getNotificationRoute() => notificationPage;
   static String getInfoVehiculeRoute() => infoVehiculePage;
+  static String getDiagnosticRoute() => diagnosticPage;
   static String getCarteGriseHomeRoute() => carteGriseHomePage;
   static String getAddCarteGriseRoute() => addCarteGrisePage;
   static String getMesCommandeRoute() => mesCommandesPage;
@@ -208,6 +210,10 @@ class RouteHelper {
     GetPage(
       name: infoVehiculePage,
       page: () => const InfoVehiculeScreen(),
+    ),
+    GetPage(
+      name: diagnosticPage,
+      page: () => const DiagnosticScreen(),
     ),
     GetPage(
       name: carteGriseHomePage,

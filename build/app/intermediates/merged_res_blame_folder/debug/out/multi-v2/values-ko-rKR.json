@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/bl/Desktop/client-control-car-main/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-ko-rKR/values-ko-rKR.xml",
+            "outputFile": "/Users/mac2/Desktop/dev-abde/flutterProjects/client-control-car-main/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-ko-rKR/values-ko-rKR.xml",
             "map": [
                 {
-                    "source": "/Users/bl/.gradle/caches/transforms-3/3819c80949e7484acef9aa04e3d4dea5/transformed/jetified-stripe-3ds2-android-6.1.5/res/values-ko-rKR/values-ko-rKR.xml",
+                    "source": "/Users/mac2/.gradle/caches/transforms-3/3819c80949e7484acef9aa04e3d4dea5/transformed/jetified-stripe-3ds2-android-6.1.5/res/values-ko-rKR/values-ko-rKR.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8",
                         "startColumns": "4,4,4,4,4,4,4",

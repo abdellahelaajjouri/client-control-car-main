@@ -14,7 +14,6 @@ import 'package:client_control_car/pages/info_vehicule/widgets/widgets.dart';
 import 'package:client_control_car/pages/menu/drawer_widget.dart';
 import 'package:client_control_car/pages/menu/menu_bottom.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 // import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -34,10 +33,8 @@ class InfoVehiculeScreen extends StatefulWidget {
   State<InfoVehiculeScreen> createState() => _InfoVehiculeScreenState();
 }
 
-// final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-//     FlutterLocalNotificationsPlugin();
-
 class _InfoVehiculeScreenState extends State<InfoVehiculeScreen> {
+  // variables
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
   int steps = 0;
   String typeVehicule = "";
@@ -57,16 +54,13 @@ class _InfoVehiculeScreenState extends State<InfoVehiculeScreen> {
   FocusNode cityFocus = FocusNode();
   FocusNode codepostalFocus = FocusNode();
   FocusNode batimentFocus = FocusNode();
-
   final _formKeyComment = GlobalKey<FormState>();
   TextEditingController commentController = TextEditingController();
   FocusNode commentFocus = FocusNode();
   double nbrStart = 0;
-
   bool isLoading = true;
   bool isLoadingShow = true;
   bool isErrors = false;
-
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   var maskFormatter = MaskTextInputFormatter(
       mask: '## - *** - ##',
@@ -81,14 +75,14 @@ class _InfoVehiculeScreenState extends State<InfoVehiculeScreen> {
         "#": RegExp(r'[0-9]'),
       },
       type: MaskAutoCompletionType.lazy);
-
-  //
   LatLng latLng = const LatLng(47.442685, 2.273293);
+
+
+
 
   @override
   void initState() {
     super.initState();
-
     check().then((value) {
       Future.delayed(const Duration(seconds: 1), () {
         getData();
@@ -100,6 +94,7 @@ class _InfoVehiculeScreenState extends State<InfoVehiculeScreen> {
     setState(() {});
   }
 
+  // Get Data from db
   getData() async {
     ControlController controlController = Get.find();
     setState(() {
@@ -114,24 +109,20 @@ class _InfoVehiculeScreenState extends State<InfoVehiculeScreen> {
                   controlController.listVehiculeType.first.id.toString();
               marqueVehicule =
                   controlController.listVehiculeMarque.first.id.toString();
-              // marqueVehicule = getListMarqueVehiculeByType(
-              //         listVehiculeMarque: controlController.listVehiculeMarque,
-              //         typeVehicule: typeVehicule)
-              //     .first
-              //     .id
-              //     .toString();
               isErrors = false;
               isLoadingShow = false;
               isLoading = false;
             });
-          } else {
+          }
+          else {
             setState(() {
               isErrors = true;
               isLoadingShow = false;
               isLoading = false;
             });
           }
-        }).catchError((onError) {
+        })
+            .catchError((onError) {
           setState(() {
             isErrors = true;
             isLoadingShow = false;
@@ -152,9 +143,8 @@ class _InfoVehiculeScreenState extends State<InfoVehiculeScreen> {
         isLoading = false;
       });
     });
-
-    //
   }
+
 
   StreamSubscription<QuerySnapshot>? subscription;
 
@@ -673,7 +663,8 @@ class _InfoVehiculeScreenState extends State<InfoVehiculeScreen> {
       key: scaffoldKey,
       appBar: checkIsWeb(context: context)
           ? null
-          : AppBar(
+          :
+          AppBar(
               backgroundColor: Colors.white,
               // elevation: 0,
               leading: steps == 0
@@ -741,7 +732,8 @@ class _InfoVehiculeScreenState extends State<InfoVehiculeScreen> {
                 );
               }),
       body: SafeArea(
-        child: SizedBox(
+        child:
+        SizedBox(
           height: sizeHeight(context: context),
           width: sizeWidth(context: context),
           child: GetBuilder<ControlController>(builder: (controlController) {
@@ -828,85 +820,6 @@ class _InfoVehiculeScreenState extends State<InfoVehiculeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              // StreamBuilder<QuerySnapshot>(
-                              //     stream: firebaseFirestore
-                              //         .collection("control")
-                              //         .snapshots(),
-                              //     builder: (context, snapshotControl) {
-                              //       AuthController authController = Get.find();
-                              //       List<String> listControlNotif = [];
-                              //       String access = authController
-                              //                   .userModel!.access
-                              //                   .toString() ==
-                              //               "null"
-                              //           ? authController.accessUserJWS
-                              //               .toString()
-                              //           : authController.userModel!.access
-                              //               .toString();
-                              //       Map<String, dynamic> payload =
-                              //           Jwt.parseJwt(access);
-                              //       if (snapshotControl.hasData) {
-                              //         if (snapshotControl
-                              //             .data!.docs.isNotEmpty) {}
-
-                              //         for (var element
-                              //             in snapshotControl.data!.docs) {
-                              //           if (element["isvue"].toString() ==
-                              //                   "false" &&
-                              //               payload["user_id"].toString() ==
-                              //                   element["user"].toString()) {
-                              //             listControlNotif.add(
-                              //                 element["id_control"] +
-                              //                     "|-|" +
-                              //                     element.id.toString());
-                              //             FirebaseFirestore.instance
-                              //                 .collection("control")
-                              //                 .doc(element.id)
-                              //                 .update({
-                              //               "isvue": true,
-                              //             });
-                              //           }
-                              //         }
-                              //         if (listControlNotif.isNotEmpty) {
-                              //           print("listControlNotif");
-                              //           print(listControlNotif);
-                              //           // Get.defaultDialog();
-                              //           Future.delayed(
-                              //               const Duration(seconds: 20), () {
-                              //             WidgetsBinding.instance
-                              //                 .addPostFrameCallback((_) {
-                              //               List<String> lstCheck =
-                              //                   listControlNotif[Random()
-                              //                           .nextInt(
-                              //                               listControlNotif
-                              //                                   .length)]
-                              //                       .split("|-|");
-                              //               ControlController
-                              //                   controlController = Get.find();
-                              //               FirebaseFirestore.instance
-                              //                   .collection("control")
-                              //                   .doc(lstCheck[1].toString())
-                              //                   .get()
-                              //                   .then((cntr) {
-                              //                 if (cntr.exists) {
-                              //                   controlController
-                              //                       .getControlDetailController(
-                              //                           idcontrol: lstCheck[0]
-                              //                               .toString())
-                              //                       .then((value) {
-                              //                     if (value.isSuccess) {
-                              //                       Get.defaultDialog();
-                              //                     }
-                              //                   });
-                              //                 }
-                              //               });
-                              //             });
-                              //           });
-                              //         }
-                              //       }
-                              //       return Container();
-                              //     }),
-                              // appbar
                               checkIsWeb(context: context)
                                   ? AppBar(
                                       backgroundColor: Colors.transparent,

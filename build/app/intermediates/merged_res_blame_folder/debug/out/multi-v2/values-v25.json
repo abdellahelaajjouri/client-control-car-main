@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/bl/Desktop/client-control-car-main/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-v25/values-v25.xml",
+            "outputFile": "/Users/mac2/Desktop/dev-abde/flutterProjects/client-control-car-main/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-v25/values-v25.xml",
             "map": [
                 {
-                    "source": "/Users/bl/.gradle/caches/transforms-3/8402d4299743b4220cd0198d492f38ee/transformed/appcompat-1.5.1/res/values-v25/values-v25.xml",
+                    "source": "/Users/mac2/.gradle/caches/transforms-3/8402d4299743b4220cd0198d492f38ee/transformed/appcompat-1.5.1/res/values-v25/values-v25.xml",
                     "from": {
                         "startLines": "2,3,4,6",
                         "startColumns": "4,4,4,4",

@@ -8,6 +8,7 @@ import 'package:client_control_car/pages/chat/list_last_chat_screen.dart';
 import 'package:client_control_car/pages/contact_assistance/contact_assistance_screen.dart';
 import 'package:client_control_car/pages/historys/mes_commande_page.dart';
 import 'package:client_control_car/pages/info_vehicule/info_vehicule_screen.dart';
+import 'package:client_control_car/pages/diagnostic/diagnostic_screen.dart';
 import 'package:client_control_car/pages/info_vehicule/widgets/widgets.dart';
 import 'package:client_control_car/pages/notification/notification_screen.dart';
 import 'package:client_control_car/pages/profil/profil_screen.dart';
@@ -159,16 +160,16 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                                 .then((value) => widget.onThen);
                           }),
                       itemMenu(
-                          title: "Demande de contrôle 2",
+                          title: "Diagnostic",
                           icon: Icons.home_filled,
                           iconAssets: "assets/icons/voiture-icon.png",
                           onTap: () {
                             if (!checkIsWeb(context: context)) {
                               Get.back();
                             }
-                            Get.to(() => const InfoVehiculeScreen(),
+                            Get.to(() => const DiagnosticScreen(),
                                 routeName:
-                                RouteHelper.getInfoVehiculeRoute())!
+                                RouteHelper.getDiagnosticRoute())!
                                 .then((value) => widget.onThen);
                           }),
                       itemMenu(

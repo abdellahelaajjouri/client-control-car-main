@@ -1,10 +1,27 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/bl/Desktop/client-control-car-main/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-cs-rCZ/values-cs-rCZ.xml",
+            "outputFile": "/Users/mac2/Desktop/dev-abde/flutterProjects/client-control-car-main/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-cs-rCZ/values-cs-rCZ.xml",
             "map": [
                 {
-                    "source": "/Users/bl/.gradle/caches/transforms-3/3819c80949e7484acef9aa04e3d4dea5/transformed/jetified-stripe-3ds2-android-6.1.5/res/values-cs-rCZ/values-cs-rCZ.xml",
+                    "source": "/Users/mac2/.gradle/caches/transforms-3/dededa4e4d145b722a175eb3ec2dcec4/transformed/jetified-paymentsheet-20.12.0/res/values-cs-rCZ/values-cs-rCZ.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,135,222,385,574,663,764,822,883,1098,1180,1266,1340,1428,1497,1596,1718,1817",
+                        "endColumns": "79,86,162,188,88,100,57,60,214,81,85,73,87,68,98,121,98,71",
+                        "endOffsets": "130,217,380,569,658,759,817,878,1093,1175,1261,1335,1423,1492,1591,1713,1812,1884"
+                    },
+                    "to": {
+                        "startLines": "9,78,146,147,148,150,151,152,154,155,156,157,161,162,163,164,165,166",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "494,6085,12251,12414,12603,12794,12895,12953,13091,13306,13388,13474,13805,13893,13962,14061,14183,14282",
+                        "endColumns": "79,86,162,188,88,100,57,60,214,81,85,73,87,68,98,121,98,71",
+                        "endOffsets": "569,6167,12409,12598,12687,12890,12948,13009,13301,13383,13469,13543,13888,13957,14056,14178,14277,14349"
+                    }
+                },
+                {
+                    "source": "/Users/mac2/.gradle/caches/transforms-3/3819c80949e7484acef9aa04e3d4dea5/transformed/jetified-stripe-3ds2-android-6.1.5/res/values-cs-rCZ/values-cs-rCZ.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8",
                         "startColumns": "4,4,4,4,4,4,4",
@@ -21,7 +38,7 @@
                     }
                 },
                 {
-                    "source": "/Users/bl/.gradle/caches/transforms-3/ca073ea605bb2368a9558f7d7f3ec753/transformed/jetified-stripe-core-20.12.0/res/values-cs-rCZ/values-cs-rCZ.xml",
+                    "source": "/Users/mac2/.gradle/caches/transforms-3/ca073ea605bb2368a9558f7d7f3ec753/transformed/jetified-stripe-core-20.12.0/res/values-cs-rCZ/values-cs-rCZ.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4",
@@ -38,7 +55,7 @@
                     }
                 },
                 {
-                    "source": "/Users/bl/.gradle/caches/transforms-3/5e3a2f071c1436fae3f7c6a3cf172503/transformed/jetified-payments-core-20.12.0/res/values-cs-rCZ/values-cs-rCZ.xml",
+                    "source": "/Users/mac2/.gradle/caches/transforms-3/5e3a2f071c1436fae3f7c6a3cf172503/transformed/jetified-payments-core-20.12.0/res/values-cs-rCZ/values-cs-rCZ.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -55,7 +72,7 @@
                     }
                 },
                 {
-                    "source": "/Users/bl/.gradle/caches/transforms-3/07f0032097c1a4d046185bd77297ca36/transformed/jetified-payments-ui-core-20.12.0/res/values-cs-rCZ/values-cs-rCZ.xml",
+                    "source": "/Users/mac2/.gradle/caches/transforms-3/07f0032097c1a4d046185bd77297ca36/transformed/jetified-payments-ui-core-20.12.0/res/values-cs-rCZ/values-cs-rCZ.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -69,23 +86,6 @@
                         "startOffsets": "1045,1288,1419,1500,1560,2004,2066,2187,2244,2305,2377,2430,2486,2553,2663,2727,2946,3824,3883,5122,7655,7717,7900,8226,8267,8336,8496,8617,8704,8789,8903,9002,9149,9731,9831,9908,10259,10360,10485,11580,12186,12692,13548,13646,13720,14354",
                         "endColumns": "71,59,80,59,53,61,57,56,60,71,52,55,66,56,63,55,68,58,81,186,61,76,41,40,68,45,62,86,84,113,98,50,75,99,76,52,100,54,553,67,64,101,97,73,84,62",
                         "endOffsets": "1112,1343,1495,1555,1609,2061,2119,2239,2300,2372,2425,2481,2548,2605,2722,2778,3010,3878,3960,5304,7712,7789,7937,8262,8331,8377,8554,8699,8784,8898,8997,9048,9220,9826,9903,9956,10355,10410,11034,11643,12246,12789,13641,13715,13800,14412"
-                    }
-                },
-                {
-                    "source": "/Users/bl/.gradle/caches/transforms-3/dededa4e4d145b722a175eb3ec2dcec4/transformed/jetified-paymentsheet-20.12.0/res/values-cs-rCZ/values-cs-rCZ.xml",
-                    "from": {
-                        "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "55,135,222,385,574,663,764,822,883,1098,1180,1266,1340,1428,1497,1596,1718,1817",
-                        "endColumns": "79,86,162,188,88,100,57,60,214,81,85,73,87,68,98,121,98,71",
-                        "endOffsets": "130,217,380,569,658,759,817,878,1093,1175,1261,1335,1423,1492,1591,1713,1812,1884"
-                    },
-                    "to": {
-                        "startLines": "9,78,146,147,148,150,151,152,154,155,156,157,161,162,163,164,165,166",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "494,6085,12251,12414,12603,12794,12895,12953,13091,13306,13388,13474,13805,13893,13962,14061,14183,14282",
-                        "endColumns": "79,86,162,188,88,100,57,60,214,81,85,73,87,68,98,121,98,71",
-                        "endOffsets": "569,6167,12409,12598,12687,12890,12948,13009,13301,13383,13469,13543,13888,13957,14056,14178,14277,14349"
                     }
                 }
             ]

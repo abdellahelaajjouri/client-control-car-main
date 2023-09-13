@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/bl/Desktop/client-control-car-main/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-nn-rNO/values-nn-rNO.xml",
+            "outputFile": "/Users/mac2/Desktop/dev-abde/flutterProjects/client-control-car-main/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-nn-rNO/values-nn-rNO.xml",
             "map": [
                 {
-                    "source": "/Users/bl/.gradle/caches/transforms-3/3819c80949e7484acef9aa04e3d4dea5/transformed/jetified-stripe-3ds2-android-6.1.5/res/values-nn-rNO/values-nn-rNO.xml",
+                    "source": "/Users/mac2/.gradle/caches/transforms-3/3819c80949e7484acef9aa04e3d4dea5/transformed/jetified-stripe-3ds2-android-6.1.5/res/values-nn-rNO/values-nn-rNO.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8",
                         "startColumns": "4,4,4,4,4,4,4",
@@ -21,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "/Users/bl/.gradle/caches/transforms-3/07f0032097c1a4d046185bd77297ca36/transformed/jetified-payments-ui-core-20.12.0/res/values-nn-rNO/values-nn-rNO.xml",
+                    "source": "/Users/mac2/.gradle/caches/transforms-3/07f0032097c1a4d046185bd77297ca36/transformed/jetified-payments-ui-core-20.12.0/res/values-nn-rNO/values-nn-rNO.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -38,24 +38,7 @@
                     }
                 },
                 {
-                    "source": "/Users/bl/.gradle/caches/transforms-3/dededa4e4d145b722a175eb3ec2dcec4/transformed/jetified-paymentsheet-20.12.0/res/values-nn-rNO/values-nn-rNO.xml",
-                    "from": {
-                        "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "55,132,217,393,583,674,783,844,903,1099,1184,1274,1345,1431,1498,1603,1733,1821",
-                        "endColumns": "76,84,175,189,90,108,60,58,195,84,89,70,85,66,104,129,87,71",
-                        "endOffsets": "127,212,388,578,669,778,839,898,1094,1179,1269,1340,1426,1493,1598,1728,1816,1888"
-                    },
-                    "to": {
-                        "startLines": "9,78,146,147,148,150,151,152,154,155,156,157,161,162,163,164,165,166",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "481,5970,12161,12337,12527,12718,12827,12888,13024,13220,13305,13395,13725,13811,13878,13983,14113,14201",
-                        "endColumns": "76,84,175,189,90,108,60,58,195,84,89,70,85,66,104,129,87,71",
-                        "endOffsets": "553,6050,12332,12522,12613,12822,12883,12942,13215,13300,13390,13461,13806,13873,13978,14108,14196,14268"
-                    }
-                },
-                {
-                    "source": "/Users/bl/.gradle/caches/transforms-3/5e3a2f071c1436fae3f7c6a3cf172503/transformed/jetified-payments-core-20.12.0/res/values-nn-rNO/values-nn-rNO.xml",
+                    "source": "/Users/mac2/.gradle/caches/transforms-3/5e3a2f071c1436fae3f7c6a3cf172503/transformed/jetified-payments-core-20.12.0/res/values-nn-rNO/values-nn-rNO.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -72,7 +55,24 @@
                     }
                 },
                 {
-                    "source": "/Users/bl/.gradle/caches/transforms-3/ca073ea605bb2368a9558f7d7f3ec753/transformed/jetified-stripe-core-20.12.0/res/values-nn-rNO/values-nn-rNO.xml",
+                    "source": "/Users/mac2/.gradle/caches/transforms-3/dededa4e4d145b722a175eb3ec2dcec4/transformed/jetified-paymentsheet-20.12.0/res/values-nn-rNO/values-nn-rNO.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,132,217,393,583,674,783,844,903,1099,1184,1274,1345,1431,1498,1603,1733,1821",
+                        "endColumns": "76,84,175,189,90,108,60,58,195,84,89,70,85,66,104,129,87,71",
+                        "endOffsets": "127,212,388,578,669,778,839,898,1094,1179,1269,1340,1426,1493,1598,1728,1816,1888"
+                    },
+                    "to": {
+                        "startLines": "9,78,146,147,148,150,151,152,154,155,156,157,161,162,163,164,165,166",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "481,5970,12161,12337,12527,12718,12827,12888,13024,13220,13305,13395,13725,13811,13878,13983,14113,14201",
+                        "endColumns": "76,84,175,189,90,108,60,58,195,84,89,70,85,66,104,129,87,71",
+                        "endOffsets": "553,6050,12332,12522,12613,12822,12883,12942,13215,13300,13390,13461,13806,13873,13978,14108,14196,14268"
+                    }
+                },
+                {
+                    "source": "/Users/mac2/.gradle/caches/transforms-3/ca073ea605bb2368a9558f7d7f3ec753/transformed/jetified-stripe-core-20.12.0/res/values-nn-rNO/values-nn-rNO.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4",
