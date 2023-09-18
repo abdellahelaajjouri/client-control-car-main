@@ -1,33 +1,21 @@
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'dart:convert';
-import 'package:client_control_car/constants/app_constant.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:client_control_car/constants/constants.dart';
-import 'package:client_control_car/constants/route_helper.dart';
 import 'package:client_control_car/controllers/auth_controller.dart';
 import 'package:client_control_car/controllers/control_controller.dart';
 import 'package:client_control_car/pages/auth/widgets/custom_input_validator.dart';
-import 'package:client_control_car/pages/book_rdv/dart_time_screen.dart';
-import 'package:client_control_car/pages/comment-ca-march/comment_ca_marche_screen.dart';
-import 'package:client_control_car/pages/historys/consulter_rapport_page.dart';
-import 'package:client_control_car/pages/info_vehicule/widgets/widgets.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:client_control_car/pages/menu/drawer_widget.dart';
 import 'package:client_control_car/pages/menu/menu_bottom.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_google_places/flutter_google_places.dart';
-// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
-import 'package:google_api_headers/google_api_headers.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_webservice/places.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'widgets/image_selection_widget.dart';
-import 'package:image_picker/image_picker.dart';import 'dart:convert';
+import 'package:image_picker/image_picker.dart';
 
 class DiagnosticScreen extends StatefulWidget {
   const DiagnosticScreen({Key? key}) : super(key: key);
@@ -36,14 +24,165 @@ class DiagnosticScreen extends StatefulWidget {
   State<DiagnosticScreen> createState() => _DiagnosticScreenState();
 }
 
+
 class _DiagnosticScreenState extends State<DiagnosticScreen> {
+  String? _filePath;
+
+  void _openFilePicker() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+    if (result != null) {
+      setState(() {
+        _filePath = result.files.single.path; // Store the selected file path
+      });
+    }
+  }
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
+  int steps = 0;
+  String typeVehicule = "";
+  String marqueVehicule = "";
+  TextEditingController lienController = TextEditingController();
+
+  TextEditingController demandeController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+  TextEditingController cityController = TextEditingController();
+  TextEditingController codepostalController = TextEditingController();
+  TextEditingController batimentController = TextEditingController();
+
+  TextEditingController marqueController = TextEditingController();
+  TextEditingController ModeleController = TextEditingController();
+  TextEditingController YearController = TextEditingController();
+  TextEditingController ImmatController = TextEditingController();
+  TextEditingController KilomController = TextEditingController();
+  TextEditingController VinController = TextEditingController();
+  TextEditingController AutreController = TextEditingController();
+
+
+  bool isPresent = true;
+  FocusNode lienFocus = FocusNode();
+
+  FocusNode demandeFocus = FocusNode();
+  FocusNode addressFocus = FocusNode();
+  FocusNode cityFocus = FocusNode();
+  FocusNode codepostalFocus = FocusNode();
+  FocusNode batimentFocus = FocusNode();
+
+
+
+
+  FocusNode ModeleFocus = FocusNode();
+  FocusNode YearFocus = FocusNode();
+  FocusNode ImmatFocus = FocusNode();
+  FocusNode KilomFocus = FocusNode();
+  FocusNode VinFocus = FocusNode();
+  FocusNode AutreFocus = FocusNode();
+
+  final _formKeyComment = GlobalKey<FormState>();
+  TextEditingController commentController = TextEditingController();
+  FocusNode commentFocus = FocusNode();
+  double nbrStart = 0;
+
+  bool isLoading = true;
+  bool isLoadingShow = true;
+  bool isErrors = false;
+  bool isOuiSelected = false;
+  bool isNonSelected = false;
+
+  bool isValideChecked = false;
+  bool isInvalideChecked = false;
+  bool isNonChecked = false;
+
+  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+
+
+
+
+  //
+  LatLng latLng = const LatLng(47.442685, 2.273293);
+
+
+  @override
+  void initState() {
+    super.initState();
+
+
+    check().then((value) {
+      Future.delayed(const Duration(seconds: 1), () {
+        getData();
+        // get data notif
+        // getDataControls();
+        // checkFirestore();
+      });
+    });
+    setState(() {});
+  }
+
+
+  getData() async {
+    ControlController controlController = Get.find();
+    setState(() {
+      isErrors = false;
+    });
+    controlController.getListTypeVehiculeController().then((value) {
+      if (value.isSuccess) {
+        controlController.getListMarqueVehiculeController().then((value) {
+          if (value.isSuccess) {
+            setState(() {
+              typeVehicule =
+                  controlController.listVehiculeType.first.id.toString();
+              marqueVehicule =
+                  controlController.listVehiculeMarque.first.id.toString();
+              // marqueVehicule = getListMarqueVehiculeByType(
+              //         listVehiculeMarque: controlController.listVehiculeMarque,
+              //         typeVehicule: typeVehicule)
+              //     .first
+              //     .id
+              //     .toString();
+              isErrors = false;
+              isLoadingShow = false;
+              isLoading = false;
+            });
+          } else {
+            setState(() {
+              isErrors = true;
+              isLoadingShow = false;
+              isLoading = false;
+            });
+          }
+        }).catchError((onError) {
+          setState(() {
+            isErrors = true;
+            isLoadingShow = false;
+            isLoading = false;
+          });
+        });
+      } else {
+        setState(() {
+          isErrors = true;
+          isLoadingShow = false;
+          isLoading = false;
+        });
+      }
+    }).catchError((onError) {
+      setState(() {
+        isErrors = true;
+        isLoadingShow = false;
+        isLoading = false;
+      });
+    });
+
+    //
+  }
 
   StreamSubscription<QuerySnapshot>? subscription;
 
+  final _formKey = GlobalKey<FormState>();
+  final _formKeyfirst = GlobalKey<FormState>();
+
+
   @override
-  Widget build(BuildContext context){
-    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  Widget build(BuildContext context) {
+    check();
     return Scaffold(
       backgroundColor: Colors.white,
       endDrawerEnableOpenDragGesture: true,
@@ -87,73 +226,235 @@ class _DiagnosticScreenState extends State<DiagnosticScreen> {
             return DrawerWidget(
               countMessage: countMessage,
               countNotification: countNotif,
-              onThen: () {},
+              onThen: () {
+                setState(() {
+                  isLoading = true;
+                });
+                getData();
+              },
             );
           }),
       key: scaffoldKey,
-      appBar: AppBar(
+      appBar: checkIsWeb(context: context)
+          ? null
+          : AppBar(
         backgroundColor: Colors.white,
-        leading : InkWell(
+        // elevation: 0,
+        leading: steps == 0
+            ? InkWell(
             onTap: () {
               scaffoldKey.currentState!.openDrawer();
             },
-            child: Image.asset("assets/icons/drawer.png")),
+            child: Image.asset("assets/icons/drawer.png"))
+            : InkWell(
+          onTap: () {
+            if (steps == 0) {
+              Get.back();
+            } else {
+              setState(() {
+                steps = 0;
+              });
+            }
+          },
+          child: Icon(
+            Icons.arrow_back_ios,
+            color: normalText,
+          ),
+        ),
       ),
-      body: MultiStepForm(),
-      bottomNavigationBar: StreamBuilder<QuerySnapshot>(
-      stream: firebaseFirestore.collection("notification").snapshots(),
-      builder: (context, snapshotNotif) {
-        int countMessage = 0;
-        int countNotif = 0;
-        if (snapshotNotif.hasData) {
-          if (snapshotNotif.data!.docs.isNotEmpty) {
-            AuthController authController = Get.find();
-            String access =
-            authController.userModel!.access.toString() == "null"
-                ? authController.accessUserJWS.toString()
-                : authController.userModel!.access.toString();
-            Map<String, dynamic> payload = Jwt.parseJwt(access);
-            int msgCont = 0;
-            int ntfCont = 0;
-            for (var element in snapshotNotif.data!.docs) {
-              if (element["type"].toString().toLowerCase() ==
-                  "Nouveau message".toLowerCase()) {
-                if (element["isvue"].toString() == "false" &&
-                    payload["user_id"].toString() ==
-                        element["user"].toString()) {
-                  msgCont++;
+      bottomNavigationBar: checkIsWeb(context: context)
+          ? null
+          : StreamBuilder<QuerySnapshot>(
+          stream: firebaseFirestore.collection("notification").snapshots(),
+          builder: (context, snapshotNotif) {
+            int countMessage = 0;
+            int countNotif = 0;
+            if (snapshotNotif.hasData) {
+              if (snapshotNotif.data!.docs.isNotEmpty) {
+                AuthController authController = Get.find();
+                String access =
+                authController.userModel!.access.toString() == "null"
+                    ? authController.accessUserJWS.toString()
+                    : authController.userModel!.access.toString();
+                Map<String, dynamic> payload = Jwt.parseJwt(access);
+                int msgCont = 0;
+                int ntfCont = 0;
+                for (var element in snapshotNotif.data!.docs) {
+                  if (element["type"].toString().toLowerCase() ==
+                      "Nouveau message".toLowerCase()) {
+                    if (element["isvue"].toString() == "false" &&
+                        payload["user_id"].toString() ==
+                            element["user"].toString()) {
+                      msgCont++;
+                    }
+                  } else {
+                    if (element["isvue"].toString() == "false" &&
+                        payload["user_id"].toString() ==
+                            element["user"].toString()) {
+                      ntfCont++;
+                    }
+                  }
                 }
-              } else {
-                if (element["isvue"].toString() == "false" &&
-                    payload["user_id"].toString() ==
-                        element["user"].toString()) {
-                  ntfCont++;
-                }
+                countMessage = msgCont;
+                countNotif = ntfCont;
               }
             }
-            countMessage = msgCont;
-            countNotif = ntfCont;
-          }
-        }
-        return MenuBottom(
-          countMessages: countMessage,
-          countNotification: countNotif,
-        );
-      }),
+            return MenuBottom(
+              countMessages: countMessage,
+              countNotification: countNotif,
+            );
+          }),
+      body: SafeArea(
+        child: SizedBox(
+          height: sizeHeight(context: context),
+          width: sizeWidth(context: context),
+          child: GetBuilder<ControlController>(builder: (controlController) {
+            return LoadingOverlay(
+              isLoading: isLoading,
+              child: isLoadingShow
+                  ? Container()
+                  : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      checkIsWeb(context: context)
+                      ? Container(
+                    margin: const EdgeInsets.only(right: 10),
+                    child: StreamBuilder<QuerySnapshot>(
+                        stream: firebaseFirestore
+                            .collection("notification")
+                            .snapshots(),
+                        builder: (context, snapshotNotif) {
+                          int countMessage = 0;
+                          int countNotif = 0;
+                          if (snapshotNotif.hasData) {
+                            if (snapshotNotif
+                                .data!.docs.isNotEmpty) {
+                              AuthController authController =
+                              Get.find();
+                              String access = authController
+                                  .userModel!.access
+                                  .toString() ==
+                                  "null"
+                                  ? authController.accessUserJWS
+                                  .toString()
+                                  : authController.userModel!.access
+                                  .toString();
+                              Map<String, dynamic> payload =
+                              Jwt.parseJwt(access);
+                              int msgCont = 0;
+                              int ntfCont = 0;
+                              for (var element
+                              in snapshotNotif.data!.docs) {
+                                if (element["type"]
+                                    .toString()
+                                    .toLowerCase() ==
+                                    "Nouveau message"
+                                        .toLowerCase()) {
+                                  if (element["isvue"].toString() ==
+                                      "false" &&
+                                      payload["user_id"]
+                                          .toString() ==
+                                          element["user"]
+                                              .toString()) {
+                                    msgCont++;
+                                  }
+                                } else {
+                                  if (element["isvue"].toString() ==
+                                      "false" &&
+                                      payload["user_id"]
+                                          .toString() ==
+                                          element["user"]
+                                              .toString()) {
+                                    ntfCont++;
+                                  }
+                                }
+                              }
+                              countMessage = msgCont;
+                              countNotif = ntfCont;
+                            }
+                          }
+
+                          return DrawerWidget(
+                            countMessage: countMessage,
+                            countNotification: countNotif,
+                            onThen: () {
+                              setState(() {
+                                isLoading = true;
+                              });
+                              getData();
+                            },
+                          );
+                        }),
+                  )
+                      : Container(),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+
+                        checkIsWeb(context: context)
+                            ? AppBar(
+                          backgroundColor: Colors.transparent,
+                          elevation: 0,
+                          leading: steps == 0
+                              ? null
+                              : InkWell(
+                            onTap: () {
+                              if (steps == 0) {
+                                Get.back();
+                              } else {
+                                setState(() {
+                                  steps = 0;
+                                });
+                              }
+                            },
+                            child: Icon(
+                              Icons.arrow_back_ios,
+                              color: normalText,
+                            ),
+                          ),
+                        )
+                            : Container(),
+                        //
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Center(
+                                child:
+                                ConstrainedBox(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 500.0, // Set the maximum width as needed
+                                    maxHeight: 2000.0, // Set the maximum height as needed
+                                  ),
+                                  child: MultiStepForm(),
+                                )
+
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ),
+      ),
     );
   }
 }
+
 
 class MultiStepForm extends StatefulWidget {
   @override
   _MultiStepFormState createState() => _MultiStepFormState();
 }
 
-
-
 class _MultiStepFormState extends State<MultiStepForm> {
   // FORMS
-  List<GlobalKey<FormState>> _formKeys = [
+  final  List<GlobalKey<FormState>>_formKeys = [
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
@@ -174,7 +475,6 @@ class _MultiStepFormState extends State<MultiStepForm> {
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
   ];
-
   // Step 1
   Map<String, dynamic> step1 = {
     'marque': null,
@@ -193,52 +493,55 @@ class _MultiStepFormState extends State<MultiStepForm> {
     "AutreDocCommentair" : null,
     "b64AutreDoc" : null
   };
-
-  TextEditingController step1_marqueController = TextEditingController();
-  TextEditingController step1_modeleController = TextEditingController();
-  TextEditingController step1_yearController = TextEditingController();
-  TextEditingController step1_immatController = TextEditingController();
-  TextEditingController step1_kilomController = TextEditingController();
-  TextEditingController step1_vinController = TextEditingController();
-  TextEditingController step1_certifImmatController = TextEditingController();
-  TextEditingController step1_b64CertifImmatController = TextEditingController();
-  TextEditingController step1_b64CertifNonGageController = TextEditingController();
-  TextEditingController step1_controleTechController = TextEditingController();
-  TextEditingController step1_b64ControleTechController = TextEditingController();
-  TextEditingController step1_carnetEntretController = TextEditingController();
-  TextEditingController step1_b64CarnetEntretController = TextEditingController();
-  TextEditingController step1_AutreDocCommentairController = TextEditingController();
-  TextEditingController step1_b64AutreDocController = TextEditingController();
-
-  // Step 2
-
-
-
-  // Variables
-  TextEditingController _field1Controller = TextEditingController();
-  TextEditingController _field2Controller = TextEditingController();
-  TextEditingController _field3Controller = TextEditingController();
-  TextEditingController _field4Controller = TextEditingController();
-  TextEditingController _field5Controller = TextEditingController();
-  TextEditingController _field6Controller = TextEditingController();
-  TextEditingController _field7Controller = TextEditingController();
-  TextEditingController _field8Controller = TextEditingController();
-  TextEditingController _field9Controller = TextEditingController();
-  TextEditingController _field10Controller = TextEditingController();
-  TextEditingController _field11Controller = TextEditingController();
-  TextEditingController _field12Controller = TextEditingController();
-  TextEditingController _field13Controller = TextEditingController();
-  TextEditingController _field14Controller = TextEditingController();
-  TextEditingController _field15Controller = TextEditingController();
-  TextEditingController _field16Controller = TextEditingController();
-  TextEditingController _field17Controller = TextEditingController();
-  TextEditingController _field18Controller = TextEditingController();
-  TextEditingController _field19Controller = TextEditingController();
+  TextEditingController step1MarqueController = TextEditingController();
+  TextEditingController step1ModeleController = TextEditingController();
+  TextEditingController step1YearController = TextEditingController();
+  var YearFormatter = MaskTextInputFormatter(
+      mask: "####",
+      filter: {
+        "#": RegExp(r'[0-9]'),
+      },
+      type: MaskAutoCompletionType.lazy);
+  TextEditingController step1ImmatController = TextEditingController();
+  TextEditingController step1KilomController = TextEditingController();
+  TextEditingController step1VinController = TextEditingController();
+  TextEditingController step1CertifImmatController = TextEditingController();
+  TextEditingController step1B64CertifImmatController = TextEditingController();
+  TextEditingController step1B64CertifNonGageController = TextEditingController();
+  TextEditingController step1ControleTechController = TextEditingController();
+  TextEditingController step1B64ControleTechController = TextEditingController();
+  TextEditingController step1CarnetEntretController = TextEditingController();
+  TextEditingController step1B64CarnetEntretController = TextEditingController();
+  TextEditingController step1AutreDocCommentairController = TextEditingController();
+  TextEditingController step1B64AutreDocController = TextEditingController();
+  FocusNode step1MarqueFocus = FocusNode();
+  FocusNode step1ModeleFocus = FocusNode();
+  FocusNode step1YearFocus = FocusNode();
+  FocusNode step1ImmatFocus = FocusNode();
+  FocusNode step1KilomFocus = FocusNode();
+  FocusNode step1VinFocus = FocusNode();
+  bool isOuiSelected = false;
+  bool isNonSelected = false;
   int _currentStep = 0;
-  List _Data = List.filled(999,"");
-
-
-
+  List data = List.filled(999,"");
+  TextEditingController field2Controller = TextEditingController();
+  TextEditingController field3Controller = TextEditingController();
+  TextEditingController field4Controller = TextEditingController();
+  TextEditingController field5Controller = TextEditingController();
+  TextEditingController field6Controller = TextEditingController();
+  TextEditingController field7Controller = TextEditingController();
+  TextEditingController field8Controller = TextEditingController();
+  TextEditingController field9Controller = TextEditingController();
+  TextEditingController field10Controller = TextEditingController();
+  TextEditingController field11Controller = TextEditingController();
+  TextEditingController field12Controller = TextEditingController();
+  TextEditingController field13Controller = TextEditingController();
+  TextEditingController field14Controller = TextEditingController();
+  TextEditingController field15Controller = TextEditingController();
+  TextEditingController field16Controller = TextEditingController();
+  TextEditingController field17Controller = TextEditingController();
+  TextEditingController field18Controller = TextEditingController();
+  TextEditingController field19Controller = TextEditingController();
   // init
   @override
   void initState() {
@@ -247,44 +550,40 @@ class _MultiStepFormState extends State<MultiStepForm> {
   }
   _getFormData() async {
     final prefs = await SharedPreferences.getInstance();
-    final Step1 = decodeObject(prefs , 'Step1');
+    final step1 = decodeObject(prefs , 'Step1');
 
     setState(() {
-      step1_marqueController.text = Step1["marque"]  ;
-      step1_modeleController.text = Step1["modele"];
-      step1_yearController.text = Step1["annee"];
-      step1_immatController.text = Step1["kilometrage"];
-      step1_kilomController.text = Step1["immatriculation"];
-      step1_vinController.text = Step1["numeroVin"];
-      step1_b64CertifImmatController.text = Step1["b64CertifImmat"] ;
-      step1_b64ControleTechController.text = Step1["b64ControleTech"] ;
-      step1_AutreDocCommentairController.text = Step1["AutreDocCommentair"] ;
-      step1_b64AutreDocController.text = Step1["b64AutreDoc"];
-      step1_b64CertifNonGageController.text = Step1["b64CertifNonGage"] ;
-      step1_b64CarnetEntretController.text = Step1["b64CarnetEntret"] ;
+      step1MarqueController.text = step1["marque"]  ;
+      step1ModeleController.text = step1["modele"];
+      step1YearController.text = step1["annee"];
+      step1ImmatController.text = step1["kilometrage"];
+      step1KilomController.text = step1["immatriculation"];
+      step1VinController.text = step1["numeroVin"];
+      step1B64CertifImmatController.text = step1["b64CertifImmat"] ;
+      step1B64ControleTechController.text = step1["b64ControleTech"] ;
+      step1AutreDocCommentairController.text = step1["AutreDocCommentair"] ;
+      step1B64AutreDocController.text = step1["b64AutreDoc"];
+      step1B64CertifNonGageController.text = step1["b64CertifNonGage"] ;
+      step1B64CarnetEntretController.text = step1["b64CarnetEntret"] ;
     });
   }
-
-
   // handle Object str
-  decodeObject(prefs, ObjectStr){
-    final ObjeStr = prefs.getString(ObjectStr);
-    return json.decode(ObjeStr!);
+  decodeObject(prefs, objectStr){
+    final objeStr = prefs.getString(objectStr);
+    return json.decode(objeStr!);
   }
-  void encode(prefs, Object , ObjName){
-    final ObjsonStr = json.encode(Object);
-    prefs.setString(ObjName, ObjsonStr);
+  void encode(prefs, object , objName){
+    final objsonStr = json.encode(Object);
+    prefs.setString(objName, objsonStr);
   }
-
-
- // Handle Steps
+  // Handle Steps
   Future<void> _nextStep() async {
     if (_currentStep == 18) {
       return;
     }
     final isValid = _formKeys[_currentStep].currentState!.validate();
     if (isValid) {
-     _formKeys[_currentStep].currentState!.save();
+      _formKeys[_currentStep].currentState!.save();
       // Save the form data to Shared Preferences
       final prefs = await SharedPreferences.getInstance();
       if (_currentStep == 0) {
@@ -303,101 +602,255 @@ class _MultiStepFormState extends State<MultiStepForm> {
       _currentStep--;
     });
   }
-
   // Content
   @override
   Widget build(BuildContext context) {
-
-    List<Step> _steps =  [
+    List<Step> steps =  [
       // 1
       Step(
-        title: Text('Documents') ,
-
+        title: const Text('Documents') ,
         content: Form(
-
           key: _formKeys[_currentStep],
           child: Column(
             children: [
-              TextFormField(
-                controller: step1_marqueController,
-                decoration: InputDecoration(labelText: 'Marque*'),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Field is required';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  step1["marque"] = value!;
-                },
+              Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 15),
+                    child : Stack(
+                      children: [
+                        CustomInputValidatore(
+                          controller: step1MarqueController,
+                          labelText: null,
+                          marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
+                          width: sizeWidth(context: context),
+                          hintText: "Marque", // Remove the space after "Marque"
+                          focusNode: step1MarqueFocus,
+                          validator: (value) {
+                            if (value?.isEmpty ?? true) {
+                              return 'Field is required';
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            step1["marque"] = value!;
+                          },
+                        ),
+                        const Positioned(
+                          right: 10, // Adjust the position of the asterisk as needed
+                          bottom: 15, // Adjust the position of the asterisk as needed
+                          child: Text(
+                            "*",
+                            style: TextStyle(
+                              color: Colors.red, // Set the color of the asterisk to red
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ),
+              Container(
+                margin: const EdgeInsets
+                    .symmetric(
+                    horizontal: 15),
+
               ),
-              TextFormField(
-                controller: step1_modeleController,
-                decoration: InputDecoration(labelText: 'Modèle*'),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Field is required';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  step1["modele"] = value!;
-                },
-              ),
-              TextFormField(
-                controller: step1_yearController,
-                decoration: InputDecoration(labelText: 'Année*'),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Field is required';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  step1["annee"] = value!;
-                },
-              ),
-              TextFormField(
-                controller: step1_immatController,
-                decoration: InputDecoration(labelText: 'Kilométrage*'),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Field is required';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  step1["kilometrage"] = value!;
-                },
-              ),
-              TextFormField(
-                controller: step1_kilomController,
-                decoration: InputDecoration(labelText: 'Immatriculation*'),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Field is required';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  step1["immatriculation"] = value!;
-                },
-              ),
-              TextFormField(
-                controller: step1_vinController,
-                decoration: InputDecoration(labelText: 'Numéro VIN*'),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Field is required';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  step1["numeroVin"] = value!;
-                },
+              const SizedBox(
+                height: 10,
               ),
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 0),
+                    margin: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Stack(
+                      children: [
+                        CustomInputValidatore(
+                          controller: step1ModeleController,
+                          labelText: null,
+                          marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
+                          width: sizeWidth(context: context),
+                          hintText: "Modèle", // Remove the space after "Marque"
+                          focusNode: step1ModeleFocus,
+                          validator: (value) {
+                            if (value?.isEmpty ?? true) {
+                              return 'Field is required';
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            step1["modele"] = value!;
+                          },
+                        ),
+                        const Positioned(
+                          right: 10, // Adjust the position of the asterisk as needed
+                          bottom: 15, // Adjust the position of the asterisk as needed
+                          child: Text(
+                            "*",
+                            style: TextStyle(
+                              color: Colors.red, // Set the color of the asterisk to red
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Stack(
+                      children: [
+                        CustomInputValidatore(
+                          controller: step1YearController,
+                          labelText: null,
+                          marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
+                          width: sizeWidth(context: context),
+                          hintText: "Année", // Remove the space after "Marque"
+                          focusNode: step1YearFocus,
+                          inputFormatters: [
+                            YearFormatter
+                          ],
+                          validator: (value) {
+                            if (value?.isEmpty ?? true) {
+                              return 'Field is required';
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            step1["annee"] = value!;
+                          },
+                        ),
+                        const Positioned(
+                          right: 10, // Adjust the position of the asterisk as needed
+                          bottom: 15, // Adjust the position of the asterisk as needed
+                          child: Text(
+                            "*",
+                            style: TextStyle(
+                              color: Colors.red, // Set the color of the asterisk to red
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Stack(
+                      children: [
+                        CustomInputValidatore(
+                          controller: step1ImmatController,
+                          labelText: null,
+                          marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
+                          width: sizeWidth(context: context),
+                          hintText: "Numéro de matriculation", // Remove the space after "Marque"
+                          focusNode: step1ImmatFocus,
+                          validator: (value) {
+                            if (value?.isEmpty ?? true) {
+                              return 'Field is required';
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            step1["immatriculation"] = value!;
+                          },
+                        ),
+                        const Positioned(
+                          right: 10, // Adjust the position of the asterisk as needed
+                          bottom: 15, // Adjust the position of the asterisk as needed
+                          child: Text(
+                            "*",
+                            style: TextStyle(
+                              color: Colors.red, // Set the color of the asterisk to red
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Stack(
+                      children: [
+                        CustomInputValidatore(
+                          controller: step1KilomController,
+                          labelText: null,
+                          marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
+                          width: sizeWidth(context: context),
+                          hintText: "Kilomètrage", // Remove the space after "Marque"
+                          focusNode: step1KilomFocus,
+                          validator: (value) {
+                            if (value?.isEmpty ?? true) {
+                              return 'Field is required';
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            step1["kilometrage"] = value!;
+                          },
+                        ),
+                        const Positioned(
+                          right: 10, // Adjust the position of the asterisk as needed
+                          bottom: 15, // Adjust the position of the asterisk as needed
+                          child: Text(
+                            "*",
+                            style: TextStyle(
+                              color: Colors.red, // Set the color of the asterisk to red
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              Container(
+                margin: const EdgeInsets
+                    .symmetric(
+                    horizontal: 15),
+              ),
+              const SizedBox(
+                    height: 10,
+                  ),
+              Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Stack(
+                      children: [
+                        CustomInputValidatore(
+                          controller: step1VinController,
+                          labelText: null,
+                          marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
+                          width: sizeWidth(context: context),
+                          hintText: "Numéro de VIN", // Remove the space after "Marque"
+                          focusNode: step1VinFocus,
+                          validator: (value) {
+                            if (value?.isEmpty ?? true) {
+                              return 'Field is required';
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            step1["numeroVin"] = value!;
+                          },
+                        ),
+                        const Positioned(
+                          right: 10, // Adjust the position of the asterisk as needed
+                          bottom: 15, // Adjust the position of the asterisk as needed
+                          child: Text(
+                            "*",
+                            style: TextStyle(
+                              color: Colors.red, // Set the color of the asterisk to red
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              const SizedBox(
+                    height: 10,
+                  ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 15),
                 child: Row(
                   children: [
                     Expanded(
@@ -407,333 +860,213 @@ class _MultiStepFormState extends State<MultiStepForm> {
                       ),
                     ),
 
-                    SizedBox(
-                      height: 30,
-
-                      child: ElevatedButton(
-                        onPressed: () {
-                          step1_certifImmatController.text = "oui";
-                          step1["CertifImmat"] = step1_certifImmatController.text;
-                        },
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(Colors.grey),
-                        ),
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text(
-                            "OUI",
-                            style: gothicBold.copyWith(fontSize: 18, color: Colors.white),
-                          ),
-                        ),
-
-                      ),
-
-                    ),
                     SizedBox(width: 10),
 
                     SizedBox(
                       height: 30,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            width: 70, // Set the width here
+                            margin: const EdgeInsets.symmetric(horizontal: 5),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  isOuiSelected = true;
+                                  isNonSelected = false;
+                                });
+                                step1CertifImmatController.text = "oui";
+                                step1["CertifImmat"] = step1CertifImmatController.text;
+                              },
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                    isOuiSelected ? Colors.grey[900] : Colors.grey),
+                              ),
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(horizontal: 0),
+                                child: Text(
+                                  "Oui",
+                                  style: gothicBold.copyWith(
+                                      fontSize: 12, color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: 80, // Set the width here
+                            margin: const EdgeInsets.symmetric(horizontal: 0),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  isOuiSelected = false;
+                                  isNonSelected = true;
+                                });
+                                step1CertifImmatController.text = "non";
+                                step1["CertifImmat"] = step1CertifImmatController.text;
+                              },
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                    isNonSelected ? Colors.grey[900] : Colors.grey),
+                              ),
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(horizontal: 0),
+                                child: Text(
+                                  "Non",
+                                  style: gothicBold.copyWith(
+                                      fontSize: 12, color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 30 , horizontal: 15),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 150,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            final ImagePicker picker = ImagePicker();
+                            final XFile? imgFile = await picker.pickImage(source: ImageSource.gallery);
+                            try {
+                              if (imgFile != null) {
+                                String base64Image = base64Encode(await imgFile.readAsBytes()!);
+                            step1B64CertifImmatController.text = base64Image;
+                            step1["b64CertifImmat"] = step1B64CertifImmatController.text;
+                            }
+                            } catch (e) {
+                            // print(e.toString());
+                            }
+                          },
+                          style: ButtonStyle(
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          child: const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.cloud_upload,
+                                size: 36,
+                                color: Colors.black,
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                "Importer votre photo",
+                                style: TextStyle(fontSize: 18, color: Colors.black),
+                              ),
 
-                      child: ElevatedButton(
-                        onPressed: () {
-                          step1_certifImmatController.text = "non";
-                          step1["CertifImmat"] = step1_certifImmatController.text;
-                        },
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(Colors.grey),
-                        ),
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text(
-                            "Non",
-                            style: gothicBold.copyWith(fontSize: 18, color: Colors.white),
+                            ],
                           ),
                         ),
                       ),
                     ),
                   ],
-
                 ),
-
-              ),
-              InkWell(
-                      onTap: () async {
-                        final ImagePicker _picker = ImagePicker();
-                        final XFile? imgFile = await _picker.pickImage(source: ImageSource.gallery);
-                        try {
-                          if (imgFile != null) {
-                            String base64Image = base64Encode(await imgFile.readAsBytes()!);
-                            step1_b64CertifImmatController.text = base64Image;
-                            step1["b64CertifImmat"] = step1_b64CertifImmatController.text;
-                          }
-                        } catch (e) {
-                          print(e.toString());
-                        }
-                      },
-                      child: const Text("Importer votre image"),
-              ),
-              Column(
-                children : [
-                  const Text("Certificat non gage",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () async {
-                      final ImagePicker _picker = ImagePicker();
-                      final XFile? imgFile = await _picker.pickImage(source: ImageSource.gallery);
-                      try {
-                        if (imgFile != null) {
-                          String base64Image = base64Encode(await imgFile.readAsBytes()!);
-                          step1_b64CertifNonGageController.text = base64Image;
-                          step1["b64CertifNonGage"] = step1_b64CertifNonGageController.text;
-                        }
-                      } catch (e) {
-                        print(e.toString());
-                      }
-                    },
-                    child: Text("Importer votre image"),
-                  ),
-                ],
               ),
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 0),
+                margin: const EdgeInsets.symmetric(horizontal: 15),
                 child: Row(
                   children: [
                     Expanded(
                       child: Text(
-                        "Contrôle Technique",
-                        style: gothicBold.copyWith(fontSize: 18),
-                      ),
-                    ),
-
-                    SizedBox(
-                      height: 30,
-
-                      child: ElevatedButton(
-                        onPressed: () {
-                          step1_controleTechController.text = "valide";
-                          step1["controleTech"] = step1_controleTechController.text;
-                        },
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(Colors.grey),
-                        ),
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text(
-                            "VALIDE",
-                            style: gothicBold.copyWith(fontSize: 18, color: Colors.white),
-                          ),
-                        ),
-
-                      ),
-
-                    ),
-                    SizedBox(width: 10),
-
-                    SizedBox(
-                      height: 30,
-
-                      child: ElevatedButton(
-                        onPressed: () {
-                          step1_controleTechController.text = "invalide";
-                          step1["controleTech"] = step1_controleTechController.text;
-                        },
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(Colors.grey),
-                        ),
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text(
-                            "INVALIDE",
-                            style: gothicBold.copyWith(fontSize: 18, color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-
-                    SizedBox(
-                      height: 30,
-
-                      child: ElevatedButton(
-                        onPressed: () {
-                          step1_controleTechController.text = "non";
-                          step1["controleTech"] = step1_controleTechController.text;
-                        },
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(Colors.grey),
-                        ),
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text(
-                            "Non",
-                            style: gothicBold.copyWith(fontSize: 18, color: Colors.white),
-                          ),
-                        ),
+                        "Certificat non gage",
+                        style:
+                        gothicBold.copyWith(
+                            fontSize: 18),
                       ),
                     ),
                   ],
-
                 ),
-
-              ),
-              InkWell(
-                  onTap: () async {
-                    final ImagePicker _picker = ImagePicker();
-                    final XFile? imgFile = await _picker.pickImage(source: ImageSource.gallery);
-                    try {
-                      if (imgFile != null) {
-                        String base64Image = base64Encode(await imgFile.readAsBytes()!);
-                        step1_b64ControleTechController.text = base64Image;
-                        step1["b64ControleTech"] = step1_b64ControleTechController.text;
-                      }
-                    } catch (e) {
-                      print(e.toString());
-                    }
-                  },
-                  child: Text("Importer votre image")
               ),
               Container(
-                margin: const EdgeInsets.symmetric(horizontal: 0),
+                margin: const EdgeInsets.symmetric(vertical: 30 , horizontal: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: Text(
-                        "Carnet d’entretien",
-                        style: gothicBold.copyWith(fontSize: 18),
-                      ),
-                    ),
+                      child: Container(
+                        height: 150,
+                        child: ElevatedButton(
+                          onPressed: () async{
+                            final ImagePicker picker = ImagePicker();
+                            final XFile? imgFile = await picker.pickImage(source: ImageSource.gallery);
+                            try {
+                              if (imgFile != null) {
+                                String base64Image = base64Encode(await imgFile.readAsBytes()!);
+                            step1B64CertifNonGageController.text = base64Image;
+                            step1["b64CertifNonGage"] = step1B64CertifNonGageController.text;
+                            }
+                            } catch (e) {
+                            // print(e.toString());
+                            }
+                          },
+                          style: ButtonStyle(
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          child: const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.cloud_upload,
+                                size: 36,
+                                color: Colors.black,
+                              ),
+                              SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Importer votre photo",
+                                    style: TextStyle(fontSize: 18, color: Colors.black),
+                                  ),
+                                  Text(
+                                    "  *",
+                                    style: TextStyle(fontSize: 18, color: Colors.red),
+                                  ),
+                                ],
+                              )
 
-                    SizedBox(
-                      height: 30,
-
-                      child: ElevatedButton(
-                        onPressed: () {
-                          step1_carnetEntretController.text = "oui";
-                          step1["carnetEntret"] = step1_carnetEntretController.text;
-                        },
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(Colors.grey),
-                        ),
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text(
-                            "OUI",
-                            style: gothicBold.copyWith(fontSize: 18, color: Colors.white),
+                            ],
                           ),
                         ),
-
-                      ),
-
-                    ),
-                    SizedBox(width: 10),
-
-                    SizedBox(
-                      height: 30,
-
-                      child: ElevatedButton(
-                        onPressed: () {
-                          step1_carnetEntretController.text = "non";
-                          step1["carnetEntret"] = step1_carnetEntretController.text;
-                        },
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(Colors.grey),
-                        ),
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text(
-                            "Non",
-                            style: gothicBold.copyWith(fontSize: 18, color: Colors.white),
-                          ),
-                        ),
                       ),
                     ),
+                    // Add the second element here
                   ],
-
                 ),
-
-              ),
-              Column(
-                children : [
-                  const Text("Carnet d’entretien" ,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    )),
-                  InkWell(
-                    onTap: () async {
-                      final ImagePicker _picker = ImagePicker();
-                      final XFile? imgFile = await _picker.pickImage(source: ImageSource.gallery);
-                      try {
-                        if (imgFile != null) {
-                          String base64Image = base64Encode(await imgFile.readAsBytes()!);
-                          step1_b64CarnetEntretController.text = base64Image;
-                          step1["b64CarnetEntret"] = step1_b64CarnetEntretController.text;
-                        }
-                      } catch (e) {
-                        print(e.toString());
-                      }
-                    },
-                    child: Text("Importer votre image"),
-                  )
-                ],
-              ),
-              Column(
-                children : [
-                  const Text("Autre documents ?" ,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      )),
-                  TextFormField(
-                    controller: step1_AutreDocCommentairController,
-                    decoration: InputDecoration(labelText: 'Ecrivez un commentaire...'),
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Field is required';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) {
-                      step1["AutreDocCommentair"] = value!;
-                    },
-                  ),
-                  InkWell(
-                    onTap: () async {
-                      final ImagePicker _picker = ImagePicker();
-                      final XFile? imgFile = await _picker.pickImage(source: ImageSource.gallery);
-                      try {
-                        if (imgFile != null) {
-                          String base64Image = base64Encode(await imgFile.readAsBytes()!);
-                          step1_b64AutreDocController.text = base64Image;
-                          step1["b64AutreDoc"] = step1_b64AutreDocController.text;
-                        }
-                      } catch (e) {
-                        print(e.toString());
-                      }
-                    },
-                    child: Text("Importer votre image"),
-                  )
-                ],
               ),
             ],
           ),
         ),
+
         isActive: _currentStep == 0,
       ),
       // 2
       Step(
-        title: Text('Extérieur avant'),
+        title: const Text('Extérieur avant'),
         content: Form(
           key: _formKeys[1],
           child: Column(
             children: [
               TextFormField(
-                controller: _field2Controller,
-                decoration: InputDecoration(labelText: 'Field 2'),
+                controller: field2Controller,
+                decoration: const InputDecoration(labelText: 'Field 2'),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Field is required';
@@ -741,7 +1074,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   return null;
                 },
                 onSaved: (value) {
-                  _Data[1] = value!;
+                  data[1] = value!;
                 },
               ),
             ],
@@ -751,14 +1084,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
       ),
       // 3
       Step(
-        title: Text('Côtés'),
+        title: const Text('Côtés'),
         content: Form(
           key: _formKeys[2],
           child: Column(
             children: [
               TextFormField(
-                controller: _field3Controller,
-                decoration: InputDecoration(labelText: 'Field 3'),
+                controller: field3Controller,
+                decoration: const InputDecoration(labelText: 'Field 3'),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Field is required';
@@ -766,7 +1099,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   return null;
                 },
                 onSaved: (value) {
-                  _Data[2] = value!;
+                  data[2] = value!;
                 },
               ),
             ],
@@ -776,14 +1109,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
       ),
       // 4
       Step(
-        title: Text('Extérieur arrière') ,
+        title: const Text('Extérieur arrière') ,
         content: Form(
           key: _formKeys[3],
           child: Column(
             children: [
               TextFormField(
-                controller: _field4Controller,
-                decoration: InputDecoration(labelText: 'Field 1'),
+                controller: field4Controller,
+                decoration: const InputDecoration(labelText: 'Field 1'),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Field is required';
@@ -791,7 +1124,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   return null;
                 },
                 onSaved: (value) {
-                  _Data[3] = value!;
+                  data[3] = value!;
                 },
               ),
             ],
@@ -801,14 +1134,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
       ),
       // 5
       Step(
-        title: Text('Toits & avis'),
+        title: const Text('Toits & avis'),
         content: Form(
           key: _formKeys[4],
           child: Column(
             children: [
               TextFormField(
-                controller: _field5Controller,
-                decoration: InputDecoration(labelText: 'Field 2'),
+                controller: field5Controller,
+                decoration: const InputDecoration(labelText: 'Field 2'),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Field is required';
@@ -816,7 +1149,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   return null;
                 },
                 onSaved: (value) {
-                  _Data[4] = value!;
+                  data[4] = value!;
                 },
               ),
             ],
@@ -826,15 +1159,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
       ),
       // 6
       Step(
-        title: Text('Jantes'),
+        title: const Text('Jantes'),
         content: Form(
           key: _formKeys[5],
           child: Column(
 
             children: [
               TextFormField(
-                controller: _field6Controller,
-                decoration: InputDecoration(labelText: 'Field 6'),
+                controller: field6Controller,
+                decoration: const InputDecoration(labelText: 'Field 6'),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Field is required';
@@ -842,7 +1175,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   return null;
                 },
                 onSaved: (value) {
-                  _Data[5] = value!;
+                  data[5] = value!;
                 },
               ),
             ],
@@ -852,14 +1185,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
       ),
       // 7
       Step(
-        title: Text('Phare') ,
+        title: const Text('Phare') ,
         content: Form(
           key: _formKeys[6],
           child: Column(
             children: [
               TextFormField(
-                controller: _field7Controller,
-                decoration: InputDecoration(labelText: 'Field 1'),
+                controller: field7Controller,
+                decoration: const InputDecoration(labelText: 'Field 1'),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Field is required';
@@ -867,7 +1200,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   return null;
                 },
                 onSaved: (value) {
-                  _Data[6] = value!;
+                  data[6] = value!;
                 },
               ),
             ],
@@ -877,14 +1210,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
       ),
       // 8
       Step(
-        title: Text('Pneumatique'),
+        title: const Text('Pneumatique'),
         content: Form(
           key: _formKeys[7],
           child: Column(
             children: [
               TextFormField(
-                controller: _field8Controller,
-                decoration: InputDecoration(labelText: 'Field 2'),
+                controller: field8Controller,
+                decoration: const InputDecoration(labelText: 'Field 2'),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Field is required';
@@ -892,7 +1225,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   return null;
                 },
                 onSaved: (value) {
-                  _Data[7] = value!;
+                  data[7] = value!;
                 },
               ),
             ],
@@ -902,14 +1235,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
       ),
       // 9
       Step(
-        title: Text('Intérieur'),
+        title: const Text('Intérieur'),
         content: Form(
           key: _formKeys[8],
           child: Column(
             children: [
               TextFormField(
-                controller: _field9Controller,
-                decoration: InputDecoration(labelText: 'Field 3'),
+                controller: field9Controller,
+                decoration: const InputDecoration(labelText: 'Field 3'),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Field is required';
@@ -917,7 +1250,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   return null;
                 },
                 onSaved: (value) {
-                  _Data[8] = value!;
+                  data[8] = value!;
                 },
               ),
             ],
@@ -927,14 +1260,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
       ),
       // 10
       Step(
-        title: Text('Intérieur avis') ,
+        title: const Text('Intérieur avis') ,
         content: Form(
           key: _formKeys[9],
           child: Column(
             children: [
               TextFormField(
-                controller: _field10Controller,
-                decoration: InputDecoration(labelText: 'Field 1'),
+                controller: field10Controller,
+                decoration: const InputDecoration(labelText: 'Field 1'),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Field is required';
@@ -942,7 +1275,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   return null;
                 },
                 onSaved: (value) {
-                  _Data[9] = value!;
+                  data[9] = value!;
                 },
               ),
             ],
@@ -952,14 +1285,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
       ),
       // 11
       Step(
-        title: Text('Électronique'),
+        title: const Text('Électronique'),
         content: Form(
           key: _formKeys[10],
           child: Column(
             children: [
               TextFormField(
-                controller: _field11Controller,
-                decoration: InputDecoration(labelText: 'Field 2'),
+                controller: field11Controller,
+                decoration: const InputDecoration(labelText: 'Field 2'),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Field is required';
@@ -967,7 +1300,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   return null;
                 },
                 onSaved: (value) {
-                  _Data[10] = value!;
+                  data[10] = value!;
                 },
               ),
             ],
@@ -977,14 +1310,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
       ),
       // 12
       Step(
-        title: Text('Moteur'),
+        title: const Text('Moteur'),
         content: Form(
           key: _formKeys[11],
           child: Column(
             children: [
               TextFormField(
-                controller: _field12Controller,
-                decoration: InputDecoration(labelText: 'Field 3'),
+                controller: field12Controller,
+                decoration: const InputDecoration(labelText: 'Field 3'),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Field is required';
@@ -992,7 +1325,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   return null;
                 },
                 onSaved: (value) {
-                  _Data[11] = value!;
+                  data[11] = value!;
                 },
               ),
             ],
@@ -1002,14 +1335,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
       ),
       // 13
       Step(
-        title: Text('Roue AVG') ,
+        title: const Text('Roue AVG') ,
         content: Form(
           key: _formKeys[12],
           child: Column(
             children: [
               TextFormField(
-                controller: _field13Controller,
-                decoration: InputDecoration(labelText: 'Field 1'),
+                controller: field13Controller,
+                decoration: const InputDecoration(labelText: 'Field 1'),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Field is required';
@@ -1017,7 +1350,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   return null;
                 },
                 onSaved: (value) {
-                  _Data[12] = value!;
+                  data[12] = value!;
                 },
               ),
             ],
@@ -1026,14 +1359,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
         isActive: _currentStep == 12,
       ),
       Step(
-        title: Text('Roue AVD'),
+        title: const Text('Roue AVD'),
         content: Form(
           key: _formKeys[13],
           child: Column(
             children: [
               TextFormField(
-                controller: _field14Controller,
-                decoration: InputDecoration(labelText: 'Field 2'),
+                controller: field14Controller,
+                decoration: const InputDecoration(labelText: 'Field 2'),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Field is required';
@@ -1041,7 +1374,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   return null;
                 },
                 onSaved: (value) {
-                  _Data[13] = value!;
+                  data[13] = value!;
                 },
               ),
             ],
@@ -1050,14 +1383,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
         isActive: _currentStep == 13,
       ),
       Step(
-        title: Text('Roue ARD'),
+        title: const Text('Roue ARD'),
         content: Form(
           key: _formKeys[14],
           child: Column(
             children: [
               TextFormField(
-                controller: _field15Controller,
-                decoration: InputDecoration(labelText: 'Field 3'),
+                controller: field15Controller,
+                decoration: const InputDecoration(labelText: 'Field 3'),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Field is required';
@@ -1065,7 +1398,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   return null;
                 },
                 onSaved: (value) {
-                  _Data[14] = value!;
+                  data[14] = value!;
                 },
               ),
             ],
@@ -1074,14 +1407,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
         isActive: _currentStep == 14,
       ),
       Step(
-        title: Text('Roue ARG') ,
+        title: const Text('Roue ARG') ,
         content: Form(
           key: _formKeys[15],
           child: Column(
             children: [
               TextFormField(
-                controller: _field16Controller,
-                decoration: InputDecoration(labelText: 'Field 1'),
+                controller: field16Controller,
+                decoration: const InputDecoration(labelText: 'Field 1'),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Field is required';
@@ -1089,7 +1422,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   return null;
                 },
                 onSaved: (value) {
-                  _Data[15] = value!;
+                  data[15] = value!;
                 },
               ),
             ],
@@ -1098,14 +1431,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
         isActive: _currentStep == 15,
       ),
       Step(
-        title: Text('Test Conduite') ,
+        title: const Text('Test Conduite') ,
         content: Form(
           key: _formKeys[16],
           child: Column(
             children: [
               TextFormField(
-                controller: _field17Controller,
-                decoration: InputDecoration(labelText: 'Field 1'),
+                controller: field17Controller,
+                decoration: const InputDecoration(labelText: 'Field 1'),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Field is required';
@@ -1113,7 +1446,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   return null;
                 },
                 onSaved: (value) {
-                  _Data[16] = value!;
+                  data[16] = value!;
                 },
               ),
             ],
@@ -1122,14 +1455,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
         isActive: _currentStep == 16,
       ),
       Step(
-        title: Text('Avis général') ,
+        title: const Text('Avis général') ,
         content: Form(
           key: _formKeys[17],
           child: Column(
             children: [
               TextFormField(
-                controller: _field18Controller,
-                decoration: InputDecoration(labelText: 'Field 1'),
+                controller: field18Controller,
+                decoration: const InputDecoration(labelText: 'Field 1'),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Field is required';
@@ -1137,7 +1470,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   return null;
                 },
                 onSaved: (value) {
-                  _Data[17] = value!;
+                  data[17] = value!;
                 },
               ),
             ],
@@ -1146,14 +1479,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
         isActive: _currentStep == 17,
       ),
       Step(
-        title: Text('Résultat') ,
+        title: const Text('Résultat') ,
         content: Form(
           key: _formKeys[18],
           child: Column(
             children: [
               TextFormField(
-                controller: _field19Controller,
-                decoration: InputDecoration(labelText: 'Field 1'),
+                controller: field19Controller,
+                decoration: const InputDecoration(labelText: 'Field 1'),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Field is required';
@@ -1161,7 +1494,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   return null;
                 },
                 onSaved: (value) {
-                  _Data[18] = value!;
+                  data[18] = value!;
                 },
               ),
             ],
@@ -1171,31 +1504,82 @@ class _MultiStepFormState extends State<MultiStepForm> {
       ),
     ];
     return Scaffold(
-      appBar: AppBar(
-        title: _steps[_currentStep].title,
-      ),
-      body : _steps[_currentStep].content,
-      persistentFooterButtons : [
-        TextButton(
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.black,
-            padding: const EdgeInsets.all(16.0),
-            textStyle: const TextStyle(fontSize: 20),
+        body : steps[_currentStep].content,
+        persistentFooterButtons : [
+          TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.black,
+              padding: const EdgeInsets.all(16.0),
+              textStyle: const TextStyle(fontSize: 20),
+            ),
+            onPressed: () => _prevStep(),
+            child: const Text('Previous'),
           ),
-          onPressed: () => _prevStep(),
-          child: const Text('Previous'),
-        ),
-        TextButton(
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.black,
-            padding: const EdgeInsets.all(16.0),
-            textStyle: const TextStyle(fontSize: 20),
+          TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.black,
+              padding: const EdgeInsets.all(16.0),
+              textStyle: const TextStyle(fontSize: 20),
+            ),
+            onPressed: () => _nextStep(),
+            child: const Text('Suivant'),
           ),
-          onPressed: () => _nextStep(),
-          child: const Text('Suivant'),
-        ),
-      ]
+        ]
     );
   }
 
 }
+
+class DynamicInkWells extends StatefulWidget {
+  @override
+  _DynamicInkWellsState createState() => _DynamicInkWellsState();
+}
+
+class _DynamicInkWellsState extends State<DynamicInkWells> {
+  List<Widget> inkWells = [];
+  List<TextEditingController> controllers = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Column(
+          children: inkWells,
+        ),
+        ElevatedButton(
+          onPressed: () {
+            _addInkWell();
+          },
+          child: Text('Add InkWell'),
+        ),
+      ],
+    );
+  }
+
+  void _addInkWell() {
+    final TextEditingController controller = TextEditingController();
+    controllers.add(controller);
+    inkWells.add(
+      InkWell(
+        onTap: () async {
+          final ImagePicker picker = ImagePicker();
+          final XFile? imgFile =
+          await picker.pickImage(source: ImageSource.gallery);
+          try {
+            if (imgFile != null) {
+              String base64Image =
+              base64Encode(await imgFile.readAsBytes());
+              controller.text = base64Image;
+            }
+          } catch (e) {
+            print(e.toString());
+          }
+        },
+        child: Text("Importer votre image"),
+      ),
+    );
+    setState(() {});
+  }
+}
+
+
