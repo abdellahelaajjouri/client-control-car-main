@@ -893,7 +893,7 @@ class _DiagnosticVehiculeScreenState extends State<DiagnosticVehiculeScreen> {
                                           ],
                                         ),
                                       ),
-
+// ! done
                                       Container(
                                         margin: const EdgeInsets.symmetric(vertical: 80),
                                         child: Row(
@@ -983,7 +983,7 @@ class _DiagnosticVehiculeScreenState extends State<DiagnosticVehiculeScreen> {
                                         ),
 
                                       ),
-
+// ! done
                                       Container(
                                         margin: const EdgeInsets.symmetric(vertical: 30),
                                         child: Row(
@@ -1023,7 +1023,7 @@ class _DiagnosticVehiculeScreenState extends State<DiagnosticVehiculeScreen> {
                                           ],
                                         ),
                                       ),
-
+// ! done
                                       Container(
                                         margin: const EdgeInsets.symmetric(horizontal: 0),
                                         child: Row(
@@ -1082,6 +1082,8 @@ class _DiagnosticVehiculeScreenState extends State<DiagnosticVehiculeScreen> {
                                         ),
 
                                       ),
+// ! done
+
                                       Container(
                                         margin: const EdgeInsets.symmetric(vertical: 30),
                                         child: Row(
@@ -1121,7 +1123,7 @@ class _DiagnosticVehiculeScreenState extends State<DiagnosticVehiculeScreen> {
                                           ],
                                         ),
                                       ),
-
+// ! done
                                       Container(
                                         margin: const EdgeInsets
                                             .symmetric(
@@ -1135,7 +1137,7 @@ class _DiagnosticVehiculeScreenState extends State<DiagnosticVehiculeScreen> {
                                               fontSize: 18),
                                         ),
                                       ),
-
+// ! done
                                       Container(
                                         margin: const EdgeInsets.symmetric(horizontal: 15),
                                         child: SizedBox(
