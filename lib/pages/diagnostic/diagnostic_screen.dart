@@ -433,12 +433,12 @@ class _MultiStepFormState extends State<MultiStepForm> {
     "kilometrage" : null,
     "immatriculation" : null,
     "numeroVin" : null ,
-    "CertifImmat" : null,
+    "CertifImmat" : "non",
     "b64CertifImmat" : null,
     "b64CertifNonGage" : null,
-    "controleTech" : null,
+    "controleTech" : "non",
     "b64ControleTech" : null,
-    "carnetEntret" : null,
+    "carnetEntret" : "oui",
     "b64CarnetEntret" : null,
     "AutreDocCommentair" : null,
     "b64AutreDoc" : null
@@ -446,12 +446,6 @@ class _MultiStepFormState extends State<MultiStepForm> {
   TextEditingController step1MarqueController = TextEditingController();
   TextEditingController step1ModeleController = TextEditingController();
   TextEditingController step1YearController = TextEditingController();
-  var YearFormatter = MaskTextInputFormatter(
-      mask: "####",
-      filter: {
-        "#": RegExp(r'[0-9]'),
-      },
-      type: MaskAutoCompletionType.lazy);
   TextEditingController step1ImmatController = TextEditingController();
   TextEditingController step1KilomController = TextEditingController();
   TextEditingController step1VinController = TextEditingController();
@@ -493,8 +487,6 @@ class _MultiStepFormState extends State<MultiStepForm> {
     "avantGaucheStatuts":null,
     "avantGaucheComment":null,
     "avantGaucheImage":null,
-
-
   };
   // Step 2 Controller
   TextEditingController step2_essuieGlaceAvantStatutsController = TextEditingController();
@@ -617,14 +609,16 @@ class _MultiStepFormState extends State<MultiStepForm> {
     "toitComment":null,
     "toitImage":null,
     "avisEtatVehiculeComment":null,
-    "avisEtatVehiculeImage":null,
+    "photoSuplementaire1" : null,
+    "photoSuplementaire2" : null ,
     "conformeAnnonceStatuts_1":null,
   };
   TextEditingController step5_toitStatutsController = TextEditingController();
   TextEditingController step5_toitCommentController = TextEditingController();
   TextEditingController step5_toitImageController = TextEditingController();
   TextEditingController step5_avisEtatVehiculeCommentController = TextEditingController();
-  TextEditingController step5_avisEtatVehiculeImageController = TextEditingController();
+  TextEditingController step5_photoSuplementaire1Controller = TextEditingController();
+  TextEditingController step5_photoSuplementaire2Controller = TextEditingController();
   TextEditingController step5_conformeAnnonceStatuts_1Controller = TextEditingController();
   FocusNode step5_toitCommentFocus = FocusNode();
   FocusNode step5_avisEtatVehiculeCommentFocus = FocusNode();
@@ -805,11 +799,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
   Map<String, dynamic> step10 = {
     "interieurAvisComment" : null,
     "interieurAvisImage":null,
+    "interieurAvisImage1" : null,
     "conformeAnnonceStatuts_2":null,
   };
   TextEditingController step10_interieurAvisCommentController = TextEditingController();
   FocusNode step10_interieurAvisCommentFocus = FocusNode();
   TextEditingController step10_interieurAvisImageController = TextEditingController();
+  TextEditingController step10_interieurAvisImage1Controller = TextEditingController();
   TextEditingController step10_conformeAnnonceStatuts_2Controller = TextEditingController();
   bool isOuiSelected14 = false;
   bool isNonSelected14 = false;
@@ -1110,6 +1106,10 @@ class _MultiStepFormState extends State<MultiStepForm> {
   bool isValideChecked56 = false;
   bool isInvalideChecked56 = false;
   bool isNonChecked56 = false;
+  Map<String, dynamic> step19 = {
+    "achatVehiculStatut" : null
+  };
+  TextEditingController step19_achatVehiculStatutController = TextEditingController();
 
   double _currentSlider1Value = 6;
   double _currentSlider2Value = 6;
@@ -1138,7 +1138,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
       step1B64ControleTechController.text = step1["b64ControleTech"] ;
       step1AutreDocCommentairController.text = step1["AutreDocCommentair"] ;
       step1B64AutreDocController.text = step1["b64AutreDoc"];
-      step1B64CertifNonGageController.text = step1["b64CertifNonGage"] ;
+      step1B64CertifNonGageController.text = step1["b64CertifNonGage"];
       step1B64CarnetEntretController.text = step1["b64CarnetEntret"] ;
     });
   }
@@ -1147,8 +1147,8 @@ class _MultiStepFormState extends State<MultiStepForm> {
     final objeStr = prefs.getString(objectStr);
     return json.decode(objeStr!);
   }
-  void encode(prefs, object , objName){
-    final objsonStr = json.encode(Object);
+  void encode(SharedPreferences prefs, Object object, String objName) {
+    final objsonStr = json.encode(object);
     prefs.setString(objName, objsonStr);
   }
   // Handle Steps
@@ -1156,18 +1156,147 @@ class _MultiStepFormState extends State<MultiStepForm> {
     if (_currentStep == 18) {
       return;
     }
-    // final isValid = _formKeys[_currentStep].currentState!.validate();
-    // if (isValid) {
-      // _formKeys[_currentStep].currentState!.save();
-      // Save the form data to Shared Preferences
-      // final prefs = await SharedPreferences.getInstance();
-      // if (_currentStep == 0) {
-       //encode(prefs, step1, 'Step1');
-      //}
-      setState(() {
-        _currentStep++;
-      });
-    // }
+    final prefs = await SharedPreferences.getInstance();
+    if (_currentStep == 0) {
+      if(step1MarqueController.text != "" && step1ModeleController.text != "" && step1YearController.text != "" && step1ImmatController.text != "" && step1KilomController.text != "" && step1VinController.text != "" && step1CertifImmatController.text != "" && step1B64CertifNonGageController.text != "" && step1AutreDocCommentairController.text != ""){
+        encode(prefs, step1, 'Step1');
+      }else{
+        showValidationError(context);
+        return ;
+      }
+    }
+    if (_currentStep == 1) {
+      showEtap2PopUp(context);
+      if(step2_pareBriseCommentController.text != "" && step2_pareBriseImageController.text != "" && step2_faceAvantCommentController.text != "" && step2_faceAvantImageController.text != "" && step2_avantDroitCommentController.text != "" && step2_avantDroitImageController.text != "" && step2_avantGaucheCommentController.text != "" && step2_avantGaucheImageController.text != ""){
+        encode(prefs, step2, 'Step2');
+      }else{
+        showValidationError(context);
+        return ;
+      }
+    }
+    if (_currentStep == 2) {
+      showEtap2PopUp(context);
+      if(step3_coteDroitCommentController.text != "" && step3_coteDroitImageController.text != "" && step3_baseCaisseDroitCommentController.text != "" && step3_baseCaisseDroitImageController.text != "" && step3_coteGaucheCommentController.text != "" && step3_coteGaucheImageController.text != "" && step3_baseCaisseGaucheCommentController.text != "" && step3_baseCaisseGaucheImageController.text != ""){
+        encode(prefs, step3, 'Step3');
+      }else{
+        showValidationError(context);
+        return ;
+      }
+    }
+    if (_currentStep == 3) {
+      if(step4_faceArriereCommentController.text != "" && step4_faceArriereImageController.text != "" && step4_arriereDroitCommentController.text != "" && step4_arriereDroitImageController.text != "" && step4_arriereGaucheCommentController.text != "" && step4_arriereGaucheImageController.text != ""){
+        encode(prefs, step5, 'Step5');
+      }else{
+        showValidationError(context);
+        return ;
+      }
+    }
+    if (_currentStep == 4) {
+      if(step5_toitCommentController.text != "" && step5_toitImageController.text != "" ){
+        encode(prefs, step5, 'Step5');
+      }else{
+        showValidationError(context);
+        return ;
+      }
+    }
+    if (_currentStep == 5) {
+      if(step6_janteAvantDroitCommentController.text != "" && step6_janteAvantDroitImageController.text != "" && step6_janteAvantGaucheImageController.text != "" && step6_janteAvantGaucheCommentController.text != "" && step6_janteArriereGaucheCommentController.text != "" && step6_janteArriereGaucheImageController.text != "" && step6_janteArriereDroitCommentController.text != "" && step6_janteArriereDroitImageController.text != "" ){
+        encode(prefs, step6, 'Step6');
+      }else{
+        showValidationError(context);
+        return ;
+      }
+    }
+    if (_currentStep == 6) {
+      if(step7_phareAvantGaucheCommentController.text != "" && step7_phareAvantGaucheImageController.text != "" && step7_phareAvantDroitCommentController.text != "" && step7_phareAvantDroitImageController.text != "" && step7_phareArriereDroitCommentController.text != "" && step7_phareArriereDroitImageController.text != "" && step7_phareArriereGaucheCommentController.text != "" && step7_phareArriereGaucheImageController.text != "" ){
+        encode(prefs, step6, 'Step6');
+      }else{
+        showValidationError(context);
+        return ;
+      }
+    }
+    if (_currentStep == 7) {
+        encode(prefs, step8, 'Step8');
+    }
+    if (_currentStep == 8) {
+      if(step9_siegeAvantGaucheCommentController.text != "" && step9_siegeAvantGaucheImageController.text != "" && step9_siegeAvantDroitCommentController.text != "" && step9_siegeAvantDroitImageController.text != "" && step9_banquetteArriereCommentController.text != "" && step9_banquetteArriereImageController.text != "" && step9_autrePhotosCommentController.text != "" && step9_autrePhotosImageController.text != "" && step9_tableauBordCommentController.text != "" && step9_tableauBordImage_1Controller.text != "" ){
+        encode(prefs, step9, 'Step9');
+      }else{
+        showValidationError(context);
+        return ;
+      }
+    }
+    if (_currentStep == 9) {
+      if(step10_interieurAvisCommentController.text != ""){
+        encode(prefs, step10, 'Step10');
+      }else{
+        showValidationError(context);
+        return ;
+      }
+    }
+    if (_currentStep == 10) {
+      if(step11_compteurImage_1Controller.text != ""){
+        encode(prefs, step11, 'Step11');
+      }else{
+        showValidationError(context);
+        return ;
+      }
+    }
+    if (_currentStep == 11) {
+      if(step12_propreteMoteurImageController.text != "" && step12_niveauEauImageController.text != "" ){
+        encode(prefs, step12, 'Step12');
+      }else{
+        showValidationError(context);
+        return ;
+      }
+    }
+    if (_currentStep == 12) {
+      if(step13_roulementGaucheImageController.text != ""){
+        encode(prefs, step13, 'Step13');
+      }else{
+        showValidationError(context);
+        return ;
+      }
+    }
+    if (_currentStep == 13) {
+      if(step14_roueAvantDroitLeveImageController.text != ""){
+        encode(prefs, step14, 'Step14');
+      }else{
+        showValidationError(context);
+        return ;
+      }
+    }
+    if (_currentStep == 14) {
+      if(step15_roueArriereDroitLeveImageController.text != ""){
+        encode(prefs, step15, 'Step15');
+      }else{
+        showValidationError(context);
+        return ;
+      }
+    }
+    if (_currentStep == 15) {
+      if(step16_roueArriereGaucheLeveImageController.text != ""){
+        encode(prefs, step16, 'Step16');
+      }else{
+        showValidationError(context);
+        return ;
+      }
+    }
+    if (_currentStep == 16) {
+      encode(prefs, step17, 'Step17');
+    }
+    if (_currentStep == 17) {
+      if(step18_avisEtatVehiculeGlobaleImageController.text != ""){
+        encode(prefs, step18, 'Step18');
+      }else{
+        showValidationError(context);
+        return ;
+      }
+    }
+
+    setState(() {
+      _currentStep++;
+    });
   }
   void _prevStep() {
     if(_currentStep == 0){
@@ -1176,6 +1305,171 @@ class _MultiStepFormState extends State<MultiStepForm> {
     setState(() {
       _currentStep--;
     });
+  }
+  void showValidationError(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+            content : const SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Center(
+                    child : Text('VEUILLEZ REMPLIR TOUT LES CHAMPS OBLIGATOIRES' , style : TextStyle(
+                        fontSize : 20 ,
+                        color : Colors.red
+                    )),
+                  ),
+                ],
+              ),
+            ),
+
+        );
+      },
+    );
+  }
+  void showCommentPopUp(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title : const Text("ATTENTION!" , style : TextStyle(
+            fontSize : 14 ,
+           )),
+          content : const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Soyez le plus précis possible dans votre explication'),
+                Text("Merci de veiller  à ne pas faire de fautes d'ortographes et de pas écrire en abréger" ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            Center (
+              child : TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+            ),
+
+          ],
+
+        );
+      },
+    );
+  }
+  void showDeFavorablePopUp(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title : const Text("ATTENTION!" , style : TextStyle(
+            fontSize : 14 ,
+          )),
+          content : const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('ETES-VOUS SUR DE DECLARER LE VEHICULE COMME DEFAVORABLE' , style : TextStyle(
+                    fontSize : 22,
+                )),
+                Text("Merci de veiller  à ne pas faire de fautes d'ortographes et de pas écrire en abréger"  , style : TextStyle(
+                  fontSize : 12,
+                )),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+
+                TextButton(
+                onPressed: () => Navigator.pop(context, 'Cancel'),
+            child: const Text('Cancel'),
+            ),
+            TextButton(
+            onPressed: () => {
+              step19_achatVehiculStatutController.text = "defavorable",
+              step19["achatVehiculStatut"] = step19_achatVehiculStatutController.text
+            },
+            child: const Text('OK'))
+          ],
+
+        );
+      },
+    );
+  }
+  void showFavorablePopUp(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title : const Text("ATTENTION!" , style : TextStyle(
+            fontSize : 14 ,
+          )),
+          content : const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('ETES-VOUS SUR DE DECLARER LE VEHICULE COMME FAVORABLE' , style : TextStyle(
+                  fontSize : 22,
+                )),
+                Text("Merci de veiller  à ne pas faire de fautes d'ortographes et de pas écrire en abréger"  , style : TextStyle(
+                  fontSize : 12,
+                )),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'Cancel'),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+                onPressed: () => {
+                  step19_achatVehiculStatutController.text = "favorable",
+                  step19["achatVehiculStatut"] = step19_achatVehiculStatutController.text
+                },
+                child: const Text('OK'))
+          ],
+
+        );
+      },
+    );
+  }
+  void showEtap2PopUp(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title : const Text(""),
+          content : const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Expliquez pourquoi le résultat est mauvais ou moyen en commentaire' , style : TextStyle(
+                  fontSize : 22,
+                )),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+
+                  onPressed: () => Navigator.pop(context, 'Cancel'),
+
+                child: const Text('OK'))
+          ],
+
+        );
+      },
+    );
   }
   // Content
   @override
@@ -1274,12 +1568,6 @@ class _MultiStepFormState extends State<MultiStepForm> {
                           width: sizeWidth(context: context),
                           hintText: "Marque", // Remove the space after "Marque"
                           focusNode: step1MarqueFocus,
-                          validator: (value) {
-                            if (value?.isEmpty ?? true) {
-                              return 'Field is required';
-                            }
-                            return null;
-                          },
                           onChanged: (value) {
                             step1["marque"] = value!;
                           },
@@ -1318,12 +1606,6 @@ class _MultiStepFormState extends State<MultiStepForm> {
                           width: sizeWidth(context: context),
                           hintText: "Modèle", // Remove the space after "Marque"
                           focusNode: step1ModeleFocus,
-                          validator: (value) {
-                            if (value?.isEmpty ?? true) {
-                              return 'Field is required';
-                            }
-                            return null;
-                          },
                           onChanged: (value) {
                             step1["modele"] = value!;
                           },
@@ -1354,17 +1636,8 @@ class _MultiStepFormState extends State<MultiStepForm> {
                           labelText: null,
                           marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
                           width: sizeWidth(context: context),
-                          hintText: "Année", // Remove the space after "Marque"
+                          hintText: "Année", 
                           focusNode: step1YearFocus,
-                          inputFormatters: [
-                            YearFormatter
-                          ],
-                          validator: (value) {
-                            if (value?.isEmpty ?? true) {
-                              return 'Field is required';
-                            }
-                            return null;
-                          },
                           onChanged: (value) {
                             step1["annee"] = value!;
                           },
@@ -1397,12 +1670,6 @@ class _MultiStepFormState extends State<MultiStepForm> {
                           width: sizeWidth(context: context),
                           hintText: "Numéro de matriculation", // Remove the space after "Marque"
                           focusNode: step1ImmatFocus,
-                          validator: (value) {
-                            if (value?.isEmpty ?? true) {
-                              return 'Field is required';
-                            }
-                            return null;
-                          },
                           onChanged: (value) {
                             step1["immatriculation"] = value!;
                           },
@@ -1437,7 +1704,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                           focusNode: step1KilomFocus,
                           validator: (value) {
                             if (value?.isEmpty ?? true) {
-                              return 'Field is required';
+                              return 'Champ requis';
                             }
                             return null;
                           },
@@ -1478,12 +1745,6 @@ class _MultiStepFormState extends State<MultiStepForm> {
                           width: sizeWidth(context: context),
                           hintText: "Numéro de VIN", // Remove the space after "Marque"
                           focusNode: step1VinFocus,
-                          validator: (value) {
-                            if (value?.isEmpty ?? true) {
-                              return 'Field is required';
-                            }
-                            return null;
-                          },
                           onChanged: (value) {
                             step1["numeroVin"] = value!;
                           },
@@ -1502,7 +1763,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     ),
                   ),
               const SizedBox(
-                    height: 10,
+                    height: 80,
                   ),
               // Certificat d'immat
               Container(
@@ -1510,10 +1771,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text(
-                        "Certificat d'immat",
-                        style: gothicBold.copyWith(fontSize: 18),
-                      ),
+                      child: Row(
+                        children : [
+                          Text(
+                            "Certificat d'immatriculation",
+                            style: gothicBold.copyWith(fontSize: 18),
+                          ),
+                        ]
+                      )
                     ),
                     SizedBox(width: 10),
                     SizedBox(
@@ -1711,11 +1976,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
                   children: [
-                     Expanded(
-                      child: Text(
-                        "Contrôle Technique",
-                        style: gothicBold.copyWith(fontSize: 18),
-                      ),
+                    SizedBox(
+                      child: Row(
+                        children : [
+                          Text(
+                            "Contrôle Technique",
+                            style: gothicBold.copyWith(fontSize: 18),
+                          ),
+                        ]
+                      )
                     ),
                     SizedBox(width: 5),
                     SizedBox(
@@ -1811,7 +2080,6 @@ class _MultiStepFormState extends State<MultiStepForm> {
                       )
                     )
                 ]),
-
               ),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 , vertical: 30 ),
@@ -1868,10 +2136,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text(
-                        "Carnet d’entretien",
-                        style: gothicBold.copyWith(fontSize: 18),
-                      ),
+                      child: Row(
+                      children : [
+                        Text(
+                          "Carnet d’entretien",
+                          style: gothicBold.copyWith(fontSize: 18),
+                        ),
+                      ]
+                    )
                     ),
 
                     SizedBox(width: 10),
@@ -2016,7 +2288,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
                     width: sizeWidth(context: context),
-                    hintText: "Ecriver un commentaire ... ",
+                    hintText: "Ecriver un commentaire ... *",
                     focusNode: step1AutreDocCommentairFocus,
                   ),
                 ),
@@ -2162,14 +2434,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Essuie Glace Avant",
                         style: gothicBold.copyWith(fontSize: 18),
                       ),
                     ),
-                    SizedBox(width: 10),
                     SizedBox(
                       height: 30,
                       child: Row(
@@ -2237,14 +2509,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Pare Brise",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -2338,7 +2610,6 @@ class _MultiStepFormState extends State<MultiStepForm> {
                           )
                       )
                     ]),
-
               ),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 , vertical: 15),
@@ -2352,7 +2623,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
                     width: sizeWidth(context: context),
-                    hintText: "Ecriver un commentaire ... ",
+                    hintText: "Ecriver un commentaire ... *",
                     focusNode: step2_pareBriseCommentFocus,
                   ),
                 ),
@@ -2414,7 +2685,10 @@ class _MultiStepFormState extends State<MultiStepForm> {
                         ),
                       ),
                     ),
-                    // Add the second element here
+                    SizedBox(
+                      height: 15,
+
+                    ),
                   ],
                 ),
               ),
@@ -2422,14 +2696,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Face Avant",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -2537,7 +2812,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
                     width: sizeWidth(context: context),
-                    hintText: "Ecriver un commentaire ...",
+                    hintText: "Ecriver un commentaire ... *",
                     focusNode: step2_faceAvantCommentFocus,
                   ),
                 ),
@@ -2550,6 +2825,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     Expanded(
                       child: Container(
                         height: 150,
+                        width : 300 ,
                         child: ElevatedButton(
                           onPressed: () async{
                             final ImagePicker picker = ImagePicker();
@@ -2593,13 +2869,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                   ),
                                 ],
                               )
-
                             ],
                           ),
                         ),
                       ),
                     ),
-                    // Add the second element here
+                    Container(
+                        padding: const EdgeInsets.all(10.0),
+                        child : Image.asset("assets/images/face_avant.png")
+                    ),
                   ],
                 ),
               ),
@@ -2607,14 +2885,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "3/4 Avant Droit",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -2723,7 +3001,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
                     width: sizeWidth(context: context),
-                    hintText: "Ecriver un commentaire ... ",
+                    hintText: "Ecriver un commentaire ...  *",
                     focusNode: step2_avantDroitCommentFocus,
                   ),
                 ),
@@ -2785,30 +3063,36 @@ class _MultiStepFormState extends State<MultiStepForm> {
                         ),
                       ),
                     ),
-                    // Add the second element here
+
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                      child : Image.asset("assets/images/avant_droit.png"),
+                    ),
+
                   ],
                 ),
               ),
               // 3/4 Avant Gauche
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
+
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "3/4 Avant Gauche",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: 120, // Set the width here
-                                margin: const EdgeInsets.symmetric(horizontal: 0),
+                                width: 105,                         margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
                                     setState(() {
@@ -2835,7 +3119,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 ),
                               ),
                               Container(
-                                width: 100, // Set the width here
+                                width: 95, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -2909,7 +3193,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
                     width: sizeWidth(context: context),
-                    hintText: "Ecriver un commentaire ... ",
+                    hintText: "Ecriver un commentaire ... *",
                     focusNode: step2_avantGaucheCommentFocus,
                   ),
                 ),
@@ -2971,7 +3255,11 @@ class _MultiStepFormState extends State<MultiStepForm> {
                         ),
                       ),
                     ),
-                    // Add the second element here
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                        child : Image.asset("assets/images/avant_gauche.png"),
+                      ),
+
                   ],
                 ),
               ),
@@ -3065,14 +3353,14 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Coté droit",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -3181,7 +3469,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
                     width: sizeWidth(context: context),
-                    hintText: "Ecriver un commentaire ... ",
+                    hintText: "Ecriver un commentaire ... *",
                     focusNode: step3_coteDroitCommentFocus,
                   ),
                 ),
@@ -3243,7 +3531,10 @@ class _MultiStepFormState extends State<MultiStepForm> {
                         ),
                       ),
                     ),
-                    // Add the second element here
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                        child : Image.asset("assets/images/coteDroit.png"),
+                      ),
                   ],
                 ),
               ),
@@ -3251,14 +3542,16 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
+
                         child: Text(
                           "Bas de caisse Droit",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 15),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -3366,7 +3659,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
                     width: sizeWidth(context: context),
-                    hintText: "Ecriver un commentaire ... ",
+                    hintText: "Ecriver un commentaire ... *",
                     focusNode: step3_baseCaisseDroitCommentFocus,
                   ),
                 ),
@@ -3428,7 +3721,11 @@ class _MultiStepFormState extends State<MultiStepForm> {
                         ),
                       ),
                     ),
-                    // Add the second element here
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                        child : Image.asset("assets/images/basCaisseDroit.png"),
+                      ),
+
                   ],
                 ),
               ),
@@ -3436,14 +3733,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Côté gauche",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -3552,7 +3850,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
                     width: sizeWidth(context: context),
-                    hintText: "Ecriver un commentaire ...",
+                    hintText: "Ecriver un commentaire ... *",
                     focusNode: step3_coteGaucheCommentFocus,
                   ),
                 ),
@@ -3614,7 +3912,10 @@ class _MultiStepFormState extends State<MultiStepForm> {
                         ),
                       ),
                     ),
-                    // Add the second element here
+                      Container(
+                        padding: const EdgeInsets.all(10.0),
+                        child : Image.asset("assets/images/coteGauche.png"),
+                    ),
                   ],
                 ),
               ),
@@ -3622,14 +3923,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Bas de caisse Gauche",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 14),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -3737,7 +4039,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
                     width: sizeWidth(context: context),
-                    hintText: "Ecriver un commentaire ...",
+                    hintText: "Ecriver un commentaire ... *",
                     focusNode: step3_baseCaisseGaucheCommentFocus,
                   ),
                 ),
@@ -3799,7 +4101,11 @@ class _MultiStepFormState extends State<MultiStepForm> {
                         ),
                       ),
                     ),
-                    // Add the second element here
+                     Container(
+                       padding: const EdgeInsets.all(10.0),
+                        child : Image.asset("assets/images/BasCaisseGauche.png"),
+                      ),
+
                   ],
                 ),
               ),
@@ -3893,14 +4199,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Essuie Glace Arrière",
                         style: gothicBold.copyWith(fontSize: 18),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
                       height: 30,
                       child: Row(
@@ -3968,14 +4275,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Face Arrière",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -4084,7 +4392,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
                     width: sizeWidth(context: context),
-                    hintText: "Ecriver un commentaire ...",
+                    hintText: "Ecriver un commentaire ... *",
                     focusNode: step4_faceArriereCommentFocus,
                   ),
                 ),
@@ -4146,7 +4454,10 @@ class _MultiStepFormState extends State<MultiStepForm> {
                         ),
                       ),
                     ),
-                    // Add the second element here
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                        child : Image.asset("assets/images/faceArrière.png"),
+                    ),
                   ],
                 ),
               ),
@@ -4154,14 +4465,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "3/4 Arrière Droit",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -4270,7 +4582,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
                     width: sizeWidth(context: context),
-                    hintText: "Ecriver un commentaire ...",
+                    hintText: "Ecriver un commentaire ... *",
                     focusNode: step4_arriereDroitCommentFocus,
                   ),
                 ),
@@ -4332,7 +4644,10 @@ class _MultiStepFormState extends State<MultiStepForm> {
                         ),
                       ),
                     ),
-                    // Add the second element here
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                        child : Image.asset("assets/images/arriereDroit.jpg"),
+                    ),
                   ],
                 ),
               ),
@@ -4340,14 +4655,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "3/4 Arrière Gauche",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 16),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -4456,7 +4772,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
                     width: sizeWidth(context: context),
-                    hintText: "Ecriver un commentaire ...",
+                    hintText: "Ecriver un commentaire ... *",
                     focusNode: step4_arriereGaucheCommentFocus,
                   ),
                 ),
@@ -4518,7 +4834,10 @@ class _MultiStepFormState extends State<MultiStepForm> {
                         ),
                       ),
                     ),
-                    // Add the second element here
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                        child : Image.asset("assets/images/arriereDroit.jpg"),
+                    ),
                   ],
                 ),
               ),
@@ -4612,14 +4931,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
-                          "Jante Avant Droit",
+                          "Toit",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -4728,7 +5048,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
                     width: sizeWidth(context: context),
-                    hintText: "Ecriver un commentaire ...",
+                    hintText: "Ecriver un commentaire ... *",
                     focusNode: step5_toitCommentFocus,
                   ),
                 ),
@@ -4843,6 +5163,24 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   ),
                 ),
               ),
+              // Phots Supplémentaires
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal:15),
+                child: SizedBox(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "Photos Supplémentaires",
+                          style:
+                          gothicBold.copyWith(
+                              fontSize: 18),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 15 , horizontal: 15),
                 child: Row(
@@ -4858,8 +5196,65 @@ class _MultiStepFormState extends State<MultiStepForm> {
                             try {
                               if (imgFile != null) {
                                 String base64Image = base64Encode(await imgFile.readAsBytes()!);
-                                step5_avisEtatVehiculeImageController.text = base64Image;
-                                step5["avisEtatVehiculeImage"] = step5_avisEtatVehiculeImageController.text;
+                                step5_photoSuplementaire1Controller.text = base64Image;
+                                step5["photoSuplementaire1"] = step5_photoSuplementaire1Controller.text;
+                              }
+                            } catch (e) {
+                              // print(e.toString());
+                            }
+                          },
+                          style: ButtonStyle(
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          child: const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.cloud_upload,
+                                size: 36,
+                                color: Colors.black,
+                              ),
+                              SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Importer votre photo",
+                                    style: TextStyle(fontSize: 18, color: Colors.black),
+                                  )
+                                ],
+                              )
+
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Add the second element here
+                  ],
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 15 , horizontal: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 150,
+                        child: ElevatedButton(
+                          onPressed: () async{
+                            final ImagePicker picker = ImagePicker();
+                            final XFile? imgFile = await picker.pickImage(source: ImageSource.gallery);
+                            try {
+                              if (imgFile != null) {
+                                String base64Image = base64Encode(await imgFile.readAsBytes()!);
+                                step5_photoSuplementaire2Controller.text = base64Image;
+                                step5["photoSuplementaire2"] = step5_photoSuplementaire2Controller.text;
                               }
                             } catch (e) {
                               // print(e.toString());
@@ -4904,14 +5299,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Conforme à l’annonce ?",
                         style: gothicBold.copyWith(fontSize: 18),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
                       height: 30,
                       child: Row(
@@ -5066,14 +5462,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Jante Avant Droit",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -5182,7 +5579,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
                     width: sizeWidth(context: context),
-                    hintText: "Ecriver un commentaire ...",
+                    hintText: "Ecriver un commentaire ... *",
                     focusNode: step6_janteAvantDroitCommentFocus,
                   ),
                 ),
@@ -5252,14 +5649,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Jante Avant Gauche",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 14),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -5368,7 +5766,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
                     width: sizeWidth(context: context),
-                    hintText: "Ecriver un commentaire ...",
+                    hintText: "Ecriver un commentaire ... *",
                     focusNode: step6_janteAvantGaucheCommentFocus,
                   ),
                 ),
@@ -5438,14 +5836,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Jante Arrière Gauche",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 14),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -5553,7 +5952,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
                     width: sizeWidth(context: context),
-                    hintText: "Ecriver un commentaire ...",
+                    hintText: "Ecriver un commentaire ... *",
                     focusNode: step6_janteArriereGaucheCommentFocus,
                   ),
                 ),
@@ -5623,14 +6022,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Jante Arrière Droit",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 14),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -5739,7 +6139,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
                     width: sizeWidth(context: context),
-                    hintText: "Ecriver un commentaire ...",
+                    hintText: "Ecriver un commentaire ... *",
                     focusNode: step6_janteArriereDroitCommentFocus,
                   ),
                 ),
@@ -5809,14 +6209,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Roue de secours",
                         style: gothicBold.copyWith(fontSize: 18),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
                       height: 30,
                       child: Row(
@@ -5970,14 +6371,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Phare Avant Gauche",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 14),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -6161,21 +6563,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Ampoule Avant Gauche",
-                        style: gothicBold.copyWith(fontSize: 18),
+                        style: gothicBold.copyWith(fontSize: 14),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
                       height: 30,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            width: 150, // Set the width here
+                            width: 120, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             child: ElevatedButton(
                               onPressed: () {
@@ -6195,13 +6598,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
                           ),
                           Container(
-                            width: 170, // Set the width here
+                            width: 150, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 0),
                             child: ElevatedButton(
                               onPressed: () {
@@ -6221,7 +6624,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "NON FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
@@ -6236,21 +6639,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Clignotant Avant Gauche",
-                        style: gothicBold.copyWith(fontSize: 18),
+                        style: gothicBold.copyWith(fontSize: 14),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
                       height: 30,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            width: 150, // Set the width here
+                            width: 120, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             child: ElevatedButton(
                               onPressed: () {
@@ -6270,13 +6674,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
                           ),
                           Container(
-                            width: 170, // Set the width here
+                            width: 150, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 0),
                             child: ElevatedButton(
                               onPressed: () {
@@ -6296,7 +6700,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "NON FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
@@ -6311,14 +6715,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Phare Avant Droit",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -6417,7 +6822,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 , vertical: 15),
                 child: SizedBox(
-                  height: 50, // Set your desired height here
+                  height: 50,
                   child: CustomInputValidatore(
                     controller: step7_phareAvantDroitCommentController,
                     labelText: null,
@@ -6502,21 +6907,21 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Ampoule Avant Droit",
                         style: gothicBold.copyWith(fontSize: 18),
                       ),
                     ),
-                    SizedBox(width: 10),
                     SizedBox(
                       height: 30,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            width: 150, // Set the width here
+                            width: 120, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             child: ElevatedButton(
                               onPressed: () {
@@ -6536,13 +6941,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
                           ),
                           Container(
-                            width: 170, // Set the width here
+                            width: 150,
                             margin: const EdgeInsets.symmetric(horizontal: 0),
                             child: ElevatedButton(
                               onPressed: () {
@@ -6562,7 +6967,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "NON FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
@@ -6577,21 +6982,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Clignotant Avant Droit",
-                        style: gothicBold.copyWith(fontSize: 18),
+                        style: gothicBold.copyWith(fontSize: 14),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
                       height: 30,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            width: 150, // Set the width here
+                            width: 120, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             child: ElevatedButton(
                               onPressed: () {
@@ -6611,13 +7017,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
                           ),
                           Container(
-                            width: 170, // Set the width here
+                            width: 150, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 0),
                             child: ElevatedButton(
                               onPressed: () {
@@ -6637,7 +7043,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "NON FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
@@ -6652,14 +7058,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Phare Arrière Droit",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 14),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -6843,21 +7250,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Ampoule Arrière Droit",
-                        style: gothicBold.copyWith(fontSize: 18),
+                        style: gothicBold.copyWith(fontSize: 14),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
                       height: 30,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            width: 150, // Set the width here
+                            width: 120, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             child: ElevatedButton(
                               onPressed: () {
@@ -6877,13 +7285,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
                           ),
                           Container(
-                            width: 170, // Set the width here
+                            width: 150, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 0),
                             child: ElevatedButton(
                               onPressed: () {
@@ -6903,7 +7311,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "NON FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
@@ -6918,21 +7326,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Clignotant Arrière Droit",
-                        style: gothicBold.copyWith(fontSize: 18),
+                        style: gothicBold.copyWith(fontSize: 14),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
                       height: 30,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            width: 150, // Set the width here
+                            width: 120, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             child: ElevatedButton(
                               onPressed: () {
@@ -6952,13 +7361,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
                           ),
                           Container(
-                            width: 170, // Set the width here
+                            width: 150, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 0),
                             child: ElevatedButton(
                               onPressed: () {
@@ -6978,7 +7387,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "NON FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
@@ -6993,14 +7402,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Phare Arrière Gauche",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 14),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -7068,7 +7478,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: ElevatedButton(
                                   onPressed: () {
                                     setState(() {
-                                      isNonChecked21 = !isNonChecked20;
+                                      isNonChecked21 = !isNonChecked21;
                                       isValideChecked21 = false;
                                       isInvalideChecked21 = false;
                                     });
@@ -7184,21 +7594,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Ampoule Arrière Gauche",
-                        style: gothicBold.copyWith(fontSize: 18),
+                        style: gothicBold.copyWith(fontSize: 14),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
                       height: 30,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            width: 150, // Set the width here
+                            width: 120, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             child: ElevatedButton(
                               onPressed: () {
@@ -7218,13 +7629,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
                           ),
                           Container(
-                            width: 170, // Set the width here
+                            width: 150, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 0),
                             child: ElevatedButton(
                               onPressed: () {
@@ -7244,7 +7655,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "NON FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
@@ -7259,21 +7670,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Clignotant Arrière Gauche",
-                        style: gothicBold.copyWith(fontSize: 18),
+                        style: gothicBold.copyWith(fontSize: 14),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
                       height: 30,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            width: 150, // Set the width here
+                            width: 120, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             child: ElevatedButton(
                               onPressed: () {
@@ -7293,13 +7705,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
                           ),
                           Container(
-                            width: 170, // Set the width here
+                            width: 150, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 0),
                             child: ElevatedButton(
                               onPressed: () {
@@ -7319,7 +7731,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "NON FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
@@ -7425,7 +7837,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     children : [
                       const Text("Pneu Avant Droit",
                           style : TextStyle(
-                            fontSize : 30,
+                            fontSize : 25,
                           ),
                       ),
                       Slider(
@@ -7478,7 +7890,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                       children : [
                         const Text("Pneu Avant Gauche",
                           style : TextStyle(
-                            fontSize : 30,
+                            fontSize : 25,
                           ),
                         ),
                         Slider(
@@ -7531,7 +7943,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                       children : [
                         const Text("Pneu Arrière Droit",
                           style : TextStyle(
-                            fontSize : 30,
+                            fontSize : 25,
                           ),
                         ),
                         Slider(
@@ -7584,7 +7996,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                       children : [
                         const Text("Pneu Arrière Gauche",
                           style : TextStyle(
-                            fontSize : 30,
+                            fontSize : 25,
                           ),
                         ),
                         Slider(
@@ -7721,21 +8133,23 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
+
                         child: Text(
                           "Apparence Géneral",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 15),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: 120, // Set the width here
+                                width: 115, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -7757,13 +8171,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MAUVAIS",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 100, // Set the width here
+                                width: 95, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -7785,13 +8199,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MOYEN",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 80, // Set the width here
+                                width: 75, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -7813,7 +8227,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "BON",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
@@ -7904,18 +8318,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 color: Colors.black,
                               ),
                               SizedBox(height: 10), // Add some spacing between icon and text
+
+
                               Row(
-                                  children : [
-                                    Text(
-                                      "Importer votre photo",
-                                      style: TextStyle(fontSize: 18, color: Colors.black),
-                                    ),
-                                    Text(
-                                      "  *",
-                                      style: TextStyle(fontSize: 18, color: Colors.red),
-                                    ),
-                                  ]
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Importer votre photo",
+                                    style: TextStyle(fontSize: 18, color: Colors.black),
+                                  ),
+                                  Text(
+                                    "  *",
+                                    style: TextStyle(fontSize: 18, color: Colors.red),
+                                  ),
+                                ],
                               )
+
 
                             ],
                           ),
@@ -8002,18 +8420,21 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 color: Colors.black,
                               ),
                               SizedBox(height: 10), // Add some spacing between icon and text
+
                               Row(
-                                  children : [
-                                    Text(
-                                      "Importer votre photo",
-                                      style: TextStyle(fontSize: 18, color: Colors.black),
-                                    ),
-                                    Text(
-                                      "  *",
-                                      style: TextStyle(fontSize: 18, color: Colors.red),
-                                    ),
-                                  ]
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Importer votre photo",
+                                    style: TextStyle(fontSize: 18, color: Colors.black),
+                                  ),
+                                  Text(
+                                    "  *",
+                                    style: TextStyle(fontSize: 18, color: Colors.red),
+                                  ),
+                                ],
                               )
+
                             ],
                           ),
                         ),
@@ -8100,17 +8521,19 @@ class _MultiStepFormState extends State<MultiStepForm> {
                               ),
                               SizedBox(height: 10), // Add some spacing between icon and text
                               Row(
-                                  children : [
-                                    Text(
-                                      "Importer votre photo",
-                                      style: TextStyle(fontSize: 18, color: Colors.black),
-                                    ),
-                                    Text(
-                                      "  *",
-                                      style: TextStyle(fontSize: 18, color: Colors.red),
-                                    ),
-                                  ]
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Importer votre photo",
+                                    style: TextStyle(fontSize: 18, color: Colors.black),
+                                  ),
+                                  Text(
+                                    "  *",
+                                    style: TextStyle(fontSize: 18, color: Colors.red),
+                                  ),
+                                ],
                               )
+
                             ],
                           ),
                         ),
@@ -8196,10 +8619,19 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 color: Colors.black,
                               ),
                               SizedBox(height: 10), // Add some spacing between icon and text
-                              Text(
-                                "Importer votre photo",
-                                style: TextStyle(fontSize: 18, color: Colors.black),
-                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Importer votre photo",
+                                    style: TextStyle(fontSize: 18, color: Colors.black),
+                                  ),
+                                  Text(
+                                    "  *",
+                                    style: TextStyle(fontSize: 18, color: Colors.red),
+                                  ),
+                                ],
+                              )
                             ],
                           ),
                         ),
@@ -8285,18 +8717,21 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 color: Colors.black,
                               ),
                               SizedBox(height: 10), // Add some spacing between icon and text
+
                               Row(
-                                  children : [
-                                    Text(
-                                      "Importer votre photo",
-                                      style: TextStyle(fontSize: 18, color: Colors.black),
-                                    ),
-                                    Text(
-                                      "  *",
-                                      style: TextStyle(fontSize: 18, color: Colors.red),
-                                    ),
-                                  ]
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Importer votre photo",
+                                    style: TextStyle(fontSize: 18, color: Colors.black),
+                                  ),
+                                  Text(
+                                    "  *",
+                                    style: TextStyle(fontSize: 18, color: Colors.red),
+                                  ),
+                                ],
                               )
+
                             ],
                           ),
                         ),
@@ -8545,18 +8980,69 @@ class _MultiStepFormState extends State<MultiStepForm> {
                   ],
                 ),
               ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 15 , vertical: 30 ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+
+                        height: 150,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            final ImagePicker picker = ImagePicker();
+                            final XFile? imgFile = await picker.pickImage(source: ImageSource.gallery);
+                            try {
+                              if (imgFile != null) {
+                                String base64Image = base64Encode(await imgFile.readAsBytes()!);
+                                step10_interieurAvisImageController.text = base64Image;
+                                step10["interieurAvisImage1"] = step10_interieurAvisImage1Controller.text;
+                              }
+                            } catch (e) {
+                              // print(e.toString());
+                            }
+                          },
+                          style: ButtonStyle(
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          child: const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.cloud_upload, // Add your upload icon here
+                                size: 36,
+                                color: Colors.black,
+                              ),
+                              SizedBox(height: 10), // Add some spacing between icon and text
+                              Text(
+                                "Importer votre photo",
+                                style: TextStyle(fontSize: 18, color: Colors.black),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               // Conforme à l'annonce
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Conforme à l'annonce",
                         style: gothicBold.copyWith(fontSize: 18),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
                       height: 30,
                       child: Row(
@@ -8571,8 +9057,8 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                   isOuiSelected14 = true;
                                   isNonSelected14 = false;
                                 });
-                                step10_interieurAvisCommentController.text = "oui";
-                                step10["conformeAnnonceStatuts_2"] = step10_interieurAvisCommentController.text;
+                                step10_conformeAnnonceStatuts_2Controller.text = "oui";
+                                step10["conformeAnnonceStatuts_2"] = step10_conformeAnnonceStatuts_2Controller.text;
                               },
                               style: ButtonStyle(
                                 backgroundColor: MaterialStateProperty.all(
@@ -8597,8 +9083,8 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                   isOuiSelected14 = false;
                                   isNonSelected14 = true;
                                 });
-                                step10_interieurAvisCommentController.text = "non";
-                                step10["roueSecoursStatut"] = step10_interieurAvisCommentController.text;
+                                step10_conformeAnnonceStatuts_2Controller.text = "non";
+                                step10["conformeAnnonceStatuts_2"] = step10_conformeAnnonceStatuts_2Controller.text;
                               },
                               style: ButtonStyle(
                                 backgroundColor: MaterialStateProperty.all(
@@ -8710,14 +9196,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Présence de voyant compteur",
                         style: gothicBold.copyWith(fontSize: 18),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
                       height: 30,
                       child: Row(
@@ -8836,16 +9323,17 @@ class _MultiStepFormState extends State<MultiStepForm> {
                               ),
                               SizedBox(height: 10), // Add some spacing between icon and text
                               Row(
-                                  children : [
-                                    Text(
-                                      "Importer votre photo",
-                                      style: TextStyle(fontSize: 18, color: Colors.black),
-                                    ),
-                                    Text(
-                                      "  *",
-                                      style: TextStyle(fontSize: 18, color: Colors.red),
-                                    ),
-                                  ]
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Importer votre photo",
+                                    style: TextStyle(fontSize: 18, color: Colors.black),
+                                  ),
+                                  Text(
+                                    "  *",
+                                    style: TextStyle(fontSize: 18, color: Colors.red),
+                                  ),
+                                ],
                               )
                             ],
                           ),
@@ -8909,14 +9397,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Airbags",
                         style: gothicBold.copyWith(fontSize: 18),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
                       height: 30,
                       child: Row(
@@ -8984,14 +9473,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Ceintures",
                         style: gothicBold.copyWith(fontSize: 18),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
                       height: 30,
                       child: Row(
@@ -9059,14 +9549,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Vitres",
                         style: gothicBold.copyWith(fontSize: 18),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
                       height: 30,
                       child: Row(
@@ -9134,21 +9625,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Réglage des rétroviseurs",
-                        style: gothicBold.copyWith(fontSize: 18),
+                        style: gothicBold.copyWith(fontSize: 14),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
                       height: 30,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            width: 150, // Set the width here
+                            width: 120, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             child: ElevatedButton(
                               onPressed: () {
@@ -9168,13 +9660,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
                           ),
                           Container(
-                            width: 170, // Set the width here
+                            width: 150, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 0),
                             child: ElevatedButton(
                               onPressed: () {
@@ -9194,7 +9686,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "NON FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
@@ -9209,21 +9701,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Enceints Véhicules",
-                        style: gothicBold.copyWith(fontSize: 18),
+                        style: gothicBold.copyWith(fontSize: 14),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
                       height: 30,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            width: 150, // Set the width here
+                            width: 120, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             child: ElevatedButton(
                               onPressed: () {
@@ -9243,13 +9736,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
                           ),
                           Container(
-                            width: 170, // Set the width here
+                            width: 150, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 0),
                             child: ElevatedButton(
                               onPressed: () {
@@ -9269,7 +9762,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "NON FONCTIONNEL",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
@@ -9282,23 +9775,24 @@ class _MultiStepFormState extends State<MultiStepForm> {
               ),
               // Panneaux de Portes
               Container(
-                margin: const EdgeInsets.symmetric(horizontal:15),
+                margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Panneaux de Portes ",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 14),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: 120, // Set the width here
+                                width: 115, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -9320,13 +9814,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MAUVAIS",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 100, // Set the width here
+                                width: 95, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -9348,13 +9842,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MOYEN",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 80, // Set the width here
+                                width: 75, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -9376,7 +9870,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "BON",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
@@ -9389,23 +9883,24 @@ class _MultiStepFormState extends State<MultiStepForm> {
               ),
               // Panneau de Coffre
               Container(
-                margin: const EdgeInsets.symmetric(horizontal:15),
+                margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Panneau de Coffre",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 14),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: 120, // Set the width here
+                                width: 115, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -9427,13 +9922,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MAUVAIS",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 100, // Set the width here
+                                width: 95, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -9455,13 +9950,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MOYEN",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 80, // Set the width here
+                                width: 75, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -9483,7 +9978,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "BON",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
@@ -9498,14 +9993,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Enceints Véhicules",
                         style: gothicBold.copyWith(fontSize: 18),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
                       height: 30,
                       child: Row(
@@ -9659,21 +10155,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Propreté du moteur",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: 120, // Set the width here
+                                width: 115, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -9695,13 +10192,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MAUVAIS",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 100, // Set the width here
+                                width: 95, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -9723,13 +10220,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MOYEN",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 80, // Set the width here
+                                width: 75, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -9751,7 +10248,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "BON",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
@@ -9827,14 +10324,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Niveau d'eau ",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -9993,16 +10491,17 @@ class _MultiStepFormState extends State<MultiStepForm> {
               ),
               // Niveau d'huile
               Container(
-                margin: const EdgeInsets.symmetric(horizontal:15),
+                margin: const EdgeInsets.symmetric(horizontal:15,vertical:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Niveau d'huile ",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -10102,21 +10601,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Transmission (cardon)",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 15),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: 120, // Set the width here
+                                width: 115, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -10138,13 +10638,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MAUVAIS",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 100, // Set the width here
+                                width: 95, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -10166,13 +10666,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MOYEN",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 80, // Set the width here
+                                width: 75, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -10194,7 +10694,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "BON",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
@@ -10316,14 +10816,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "Conforme à l'annonce",
                         style: gothicBold.copyWith(fontSize: 18),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
                       height: 100,
                       child: Row(
@@ -10527,16 +11028,17 @@ class _MultiStepFormState extends State<MultiStepForm> {
                               ),
                               SizedBox(height: 10), // Add some spacing between icon and text
                               Row(
-                                  children : [
-                                    Text(
-                                      "Importer votre photo",
-                                      style: TextStyle(fontSize: 18, color: Colors.black),
-                                    ),
-                                    Text(
-                                      "  *",
-                                      style: TextStyle(fontSize: 18, color: Colors.red),
-                                    ),
-                                  ]
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Importer votre photo",
+                                    style: TextStyle(fontSize: 18, color: Colors.black),
+                                  ),
+                                  Text(
+                                    "  *",
+                                    style: TextStyle(fontSize: 18, color: Colors.red),
+                                  ),
+                                ],
                               )
                             ],
                           ),
@@ -10550,14 +11052,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Rotule Triangle G",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -10716,20 +11219,20 @@ class _MultiStepFormState extends State<MultiStepForm> {
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Routule Barre Stable Dir. G",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 15),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: 120, // Set the width here
+                                width: 100, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -10751,13 +11254,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MAUVAIS",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 100, // Set the width here
+                                width: 90, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -10779,13 +11282,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MOYEN",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 80, // Set the width here
+                                width: 70, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -10807,7 +11310,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "BON",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
@@ -10879,21 +11382,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Rotule Bielette Dir. G",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 15),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: 120, // Set the width here
+                                width: 115, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -10915,13 +11419,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MAUVAIS",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 100, // Set the width here
+                                width: 95, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -10943,13 +11447,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MOYEN",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 80, // Set the width here
+                                width: 75, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -10971,7 +11475,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "BON",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
@@ -11044,14 +11548,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Roulement G",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -11209,14 +11714,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Suspension G",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -11374,14 +11880,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Disque G",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -11539,14 +12046,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Plaquette G",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -11704,14 +12212,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Cardan G",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -12005,19 +12514,18 @@ class _MultiStepFormState extends State<MultiStepForm> {
                               ),
                               SizedBox(height: 10), // Add some spacing between icon and text
                               Row(
-                                  children :  [
-                                    Text(
-                                      "Importer votre photo",
-                                      style: TextStyle(fontSize: 18, color: Colors.black),
-                                    ),
-                                    Text(
-                                      "  *",
-                                      style: TextStyle(fontSize: 18, color: Colors.red),
-                                    ),
-                                  ]
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Importer votre photo",
+                                    style: TextStyle(fontSize: 18, color: Colors.black),
+                                  ),
+                                  Text(
+                                    "  *",
+                                    style: TextStyle(fontSize: 18, color: Colors.red),
+                                  ),
+                                ],
                               )
-
-
                             ],
                           ),
                         ),
@@ -12030,21 +12538,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Rotule Triangle D",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 15),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: 120, // Set the width here
+                                width: 115, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -12066,13 +12575,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MAUVAIS",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 100, // Set the width here
+                                width: 95, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -12094,13 +12603,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MOYEN",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 80, // Set the width here
+                                width: 75, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -12122,7 +12631,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "BON",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
@@ -12195,21 +12704,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Routule Barre Dir. D",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 15),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: 120, // Set the width here
+                                width: 115, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -12231,13 +12741,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MAUVAIS",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 100, // Set the width here
+                                width: 95, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -12259,13 +12769,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MOYEN",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 80, // Set the width here
+                                width: 75, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -12287,7 +12797,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "BON",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
@@ -12363,21 +12873,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Routule Bielette Dir. D",
-                           style: gothicBold.copyWith(fontSize: 18),
+                           style: gothicBold.copyWith(fontSize: 15),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: 120, // Set the width here
+                                width: 115, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -12399,13 +12910,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MAUVAIS",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 100, // Set the width here
+                                width: 95, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -12427,13 +12938,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MOYEN",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 80, // Set the width here
+                                width: 75, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -12455,7 +12966,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "BON",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
@@ -12531,14 +13042,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Roulement D",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -12699,14 +13211,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Suspension D",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -12867,14 +13380,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Disque D",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -13035,14 +13549,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Plaquette D",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -13203,14 +13718,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Cardan D",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -13506,10 +14022,19 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 color: Colors.black,
                               ),
                               SizedBox(height: 10), // Add some spacing between icon and text
-                              Text(
-                                "Importer votre photo",
-                                style: TextStyle(fontSize: 18, color: Colors.black),
-                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Importer votre photo",
+                                    style: TextStyle(fontSize: 18, color: Colors.black),
+                                  ),
+                                  Text(
+                                    "  *",
+                                    style: TextStyle(fontSize: 18, color: Colors.red),
+                                  ),
+                                ],
+                              )
                             ],
                           ),
                         ),
@@ -13522,21 +14047,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Roulement Arrière D",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 15),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: 120, // Set the width here
+                                width: 115, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -13558,13 +14084,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MAUVAIS",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 100, // Set the width here
+                                width: 95, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -13586,13 +14112,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MOYEN",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 80, // Set the width here
+                                width: 75, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -13614,7 +14140,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "BON",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
@@ -13670,10 +14196,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     "Importer votre photo",
                                     style: TextStyle(fontSize: 18, color: Colors.black),
                                   ),
-                                  Text(
-                                    "  *",
-                                    style: TextStyle(fontSize: 18, color: Colors.red),
-                                  ),
+
                                 ],
                               )
 
@@ -13690,21 +14213,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Suspension Arrière D",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 15),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: 120, // Set the width here
+                                width: 115, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -13726,13 +14250,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MAUVAIS",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 100, // Set the width here
+                                width: 95, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -13754,13 +14278,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MOYEN",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 80, // Set the width here
+                                width: 75, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -13782,7 +14306,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "BON",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
@@ -13838,10 +14362,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     "Importer votre photo",
                                     style: TextStyle(fontSize: 18, color: Colors.black),
                                   ),
-                                  Text(
-                                    "  *",
-                                    style: TextStyle(fontSize: 18, color: Colors.red),
-                                  ),
+
                                 ],
                               )
 
@@ -13858,14 +14379,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Disque Arrière D",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -14006,10 +14528,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     "Importer votre photo",
                                     style: TextStyle(fontSize: 18, color: Colors.black),
                                   ),
-                                  Text(
-                                    "  *",
-                                    style: TextStyle(fontSize: 18, color: Colors.red),
-                                  ),
+
                                 ],
                               )
 
@@ -14026,21 +14545,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Plaquette Arrière D",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 15),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: 120, // Set the width here
+                                width: 115, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -14062,13 +14582,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MAUVAIS",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 100, // Set the width here
+                                width: 95, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -14090,13 +14610,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MOYEN",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 80, // Set the width here
+                                width: 75, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -14118,7 +14638,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "BON",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
@@ -14174,10 +14694,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     "Importer votre photo",
                                     style: TextStyle(fontSize: 18, color: Colors.black),
                                   ),
-                                  Text(
-                                    "  *",
-                                    style: TextStyle(fontSize: 18, color: Colors.red),
-                                  ),
+
                                 ],
                               )
 
@@ -14329,10 +14846,19 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 color: Colors.black,
                               ),
                               SizedBox(height: 10), // Add some spacing between icon and text
-                              Text(
-                                "Importer votre photo",
-                                style: TextStyle(fontSize: 18, color: Colors.black),
-                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Importer votre photo",
+                                    style: TextStyle(fontSize: 18, color: Colors.black),
+                                  ),
+                                  Text(
+                                    "  *",
+                                    style: TextStyle(fontSize: 18, color: Colors.red),
+                                  ),
+                                ],
+                              )
                             ],
                           ),
                         ),
@@ -14345,21 +14871,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Roulement Arrière G",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 15),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: 120, // Set the width here
+                                width: 115, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -14381,13 +14908,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MAUVAIS",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 100, // Set the width here
+                                width: 95, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -14409,13 +14936,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MOYEN",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 80, // Set the width here
+                                width: 75, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -14437,7 +14964,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "BON",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
@@ -14493,10 +15020,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     "Importer votre photo",
                                     style: TextStyle(fontSize: 18, color: Colors.black),
                                   ),
-                                  Text(
-                                    "  *",
-                                    style: TextStyle(fontSize: 18, color: Colors.red),
-                                  ),
+
                                 ],
                               )
 
@@ -14513,21 +15037,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Suspension Arrière G",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 15),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: 120, // Set the width here
+                                width: 115, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -14549,13 +15074,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MAUVAIS",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 100, // Set the width here
+                                width: 95, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -14577,13 +15102,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MOYEN",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 80, // Set the width here
+                                width: 75, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -14605,7 +15130,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "BON",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
@@ -14661,10 +15186,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     "Importer votre photo",
                                     style: TextStyle(fontSize: 18, color: Colors.black),
                                   ),
-                                  Text(
-                                    "  *",
-                                    style: TextStyle(fontSize: 18, color: Colors.red),
-                                  ),
+
                                 ],
                               )
 
@@ -14681,14 +15203,15 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Disque Arrière G",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -14829,10 +15352,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     "Importer votre photo",
                                     style: TextStyle(fontSize: 18, color: Colors.black),
                                   ),
-                                  Text(
-                                    "  *",
-                                    style: TextStyle(fontSize: 18, color: Colors.red),
-                                  ),
+
                                 ],
                               )
 
@@ -14849,21 +15369,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal:15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Plaquette Arrière G",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 15),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: 120, // Set the width here
+                                width: 115, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -14885,13 +15406,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MAUVAIS",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 100, // Set the width here
+                                width: 95, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -14913,13 +15434,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MOYEN",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 80, // Set the width here
+                                width: 75, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -14941,7 +15462,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "BON",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
@@ -14997,10 +15518,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     "Importer votre photo",
                                     style: TextStyle(fontSize: 18, color: Colors.black),
                                   ),
-                                  Text(
-                                    "  *",
-                                    style: TextStyle(fontSize: 18, color: Colors.red),
-                                  ),
+
                                 ],
                               )
 
@@ -15103,21 +15621,22 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    SizedBox(
                       child: Text(
                         "claquemnet ou Buit Innaproprié?",
-                        style: gothicBold.copyWith(fontSize: 18),
+                        style: gothicBold.copyWith(fontSize: 15),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
-                      height: 100,
+                      height: 30,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            width: 100, // Set the width here
+                            width: 95, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 5),
                             child: ElevatedButton(
                               onPressed: () {
@@ -15137,13 +15656,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "OUI",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
                           ),
                           Container(
-                            width: 100, // Set the width here
+                            width: 95, // Set the width here
                             margin: const EdgeInsets.symmetric(horizontal: 0),
                             child: ElevatedButton(
                               onPressed: () {
@@ -15163,7 +15682,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                 child: Text(
                                   "NON",
                                   style: gothicBold.copyWith(
-                                      fontSize: 12, color: Colors.white),
+                                      fontSize: 10, color: Colors.white),
                                 ),
                               ),
                             ),
@@ -15176,16 +15695,17 @@ class _MultiStepFormState extends State<MultiStepForm> {
               ),
               // Direction
               Container(
-                margin: const EdgeInsets.symmetric(horizontal:15),
+                margin: const EdgeInsets.symmetric(horizontal:15 , vertical : 15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Direction",
                           style: gothicBold.copyWith(fontSize: 18),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
@@ -15283,23 +15803,24 @@ class _MultiStepFormState extends State<MultiStepForm> {
               ),
               // Fumée Echappement
               Container(
-                margin: const EdgeInsets.symmetric(horizontal:15),
+                margin: const EdgeInsets.symmetric(horizontal:15 ,vertical: 15),
                 child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
+                      SizedBox(
                         child: Text(
                           "Fumée Echappement",
-                          style: gothicBold.copyWith(fontSize: 18),
+                          style: gothicBold.copyWith(fontSize: 15),
                         ),
                       ),
-                      SizedBox(width: 5),
+
                       SizedBox(
                           height: 30,
                           child : Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: 120, // Set the width here
+                                width: 115, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -15321,13 +15842,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MAUVAIS",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 100, // Set the width here
+                                width: 95, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 5),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -15349,13 +15870,13 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "MOYEN",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
                               ),
                               Container(
-                                width: 80, // Set the width here
+                                width: 75, // Set the width here
                                 margin: const EdgeInsets.symmetric(horizontal: 0),
                                 child: ElevatedButton(
                                   onPressed: () {
@@ -15377,7 +15898,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                                     child:  Text(
                                       "BON",
                                       style: gothicBold.copyWith(
-                                          fontSize: 12, color: Colors.white),
+                                          fontSize: 10, color: Colors.white),
                                     ),
                                   ),
                                 ),
@@ -15392,16 +15913,18 @@ class _MultiStepFormState extends State<MultiStepForm> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15 ,vertical: 15),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+
+                    SizedBox(
                       child: Text(
                         "Conforme à l'annoce",
                         style: gothicBold.copyWith(fontSize: 18),
                       ),
                     ),
-                    SizedBox(width: 10),
+
                     SizedBox(
-                      height: 100,
+                      height: 30,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -15598,7 +16121,7 @@ class _MultiStepFormState extends State<MultiStepForm> {
                     },
                     marginContainer: const EdgeInsets.only(bottom: 0, top: 0),
                     width: sizeWidth(context: context),
-                    hintText: "Votre avis*",
+                    hintText: "Votre avis... *",
                     focusNode: step18_avisEtatVehiculeGlobaleImageFocus,
                   ),
                 ),
@@ -15683,7 +16206,10 @@ class _MultiStepFormState extends State<MultiStepForm> {
                           textStyle: const TextStyle(fontSize: 40 ),
                           backgroundColor : Colors.green
                       ),
-                      onPressed: () => {},
+                      onPressed: () => {
+                        showFavorablePopUp(context),
+
+                      },
                       child: const Text('FAVORABLE' , style: TextStyle(color: Colors.white )),
                     ),
               ),
@@ -15697,7 +16223,9 @@ class _MultiStepFormState extends State<MultiStepForm> {
                       textStyle: const TextStyle(fontSize: 40 ),
                       backgroundColor : Colors.black
                   ),
-                  onPressed: () => {},
+                  onPressed: () => {
+                    showDeFavorablePopUp(context)
+                  },
                   child: const Text('DEFAVORABLE' , style: TextStyle(color: Colors.white )),
                 ),
               )
