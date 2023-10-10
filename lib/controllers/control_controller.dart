@@ -34,7 +34,7 @@ class ControlController extends GetxController implements GetxService {
   String? idRendezVous;
   String? idFacturation;
   String? idControl;
-  String? listTechselected;
+  String?  listTechselected;
 
   // address
   String? facaddress;

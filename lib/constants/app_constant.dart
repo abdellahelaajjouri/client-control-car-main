@@ -14,10 +14,11 @@ class AppConstant {
   // static const String secruteKey =
   //     "sk_test_51LOP9yC6otGGSz7Jg6pPgsYRwU3ZX2tFonCB6WRmATBy7FdwsuTBVZZyHOx5shu5Dd itZJugcLeNdLDILBqC7gb300HgIcU0ox";
 
-  static const String publishableKey =
-      "pk_live_51LOP9yC6otGGSz7JSfmjtl05YqdYQJEX82JPudRpIHeqp73WqUAWB4iN2z8ZxxkCzHhE RTgZTjyss19cJNlcetS000lKicLUCQ";
-  static const String secruteKey =
-      "sk_live_51LOP9yC6otGGSz7JHv79V2W4UFpp2xebM6Jje80RIYsBToEOOt5E0zoZAwpwmYrF5qIld UJHq5Aq2Io0EQxui1h000IsDao5ex";
+  //static const String publishableKey = "pk_live_51LOP9yC6otGGSz7JSfmjtl05YqdYQJEX82JPudRpIHeqp73WqUAWB4iN2z8ZxxkCzHhE RTgZTjyss19cJNlcetS000lKicLUCQ";
+ // static const String secruteKey = "sk_live_51LOP9yC6otGGSz7JHv79V2W4UFpp2xebM6Jje80RIYsBToEOOt5E0zoZAwpwmYrF5qIld UJHq5Aq2Io0EQxui1h000IsDao5ex";
+
+  static const String publishableKey = "pk_test_MMlMqLCiRcChg43q1v1A5x3t00CfQB6kjb";
+  static const String secruteKey = "sk_test_Srl0RcimludMAdiCap5R0TNo006scBiP2i";
 
   static const String TOKEN = 'client_token';
   static const String USER_PASSWORD = 'user_password';

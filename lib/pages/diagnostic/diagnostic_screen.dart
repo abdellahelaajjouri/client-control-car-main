@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:client_control_car/constants/constants.dart';
@@ -1124,28 +1125,51 @@ class _MultiStepFormState extends State<MultiStepForm> {
     _getFormData();
   }
   _getFormData() async {
+
     final prefs = await SharedPreferences.getInstance();
     final step1 = decodeObject(prefs , 'Step1');
 
-    setState(() {
-      step1MarqueController.text = step1["marque"]  ;
-      step1ModeleController.text = step1["modele"];
-      step1YearController.text = step1["annee"];
-      step1ImmatController.text = step1["kilometrage"];
-      step1KilomController.text = step1["immatriculation"];
-      step1VinController.text = step1["numeroVin"];
-      step1B64CertifImmatController.text = step1["b64CertifImmat"] ;
-      step1B64ControleTechController.text = step1["b64ControleTech"] ;
-      step1AutreDocCommentairController.text = step1["AutreDocCommentair"] ;
-      step1B64AutreDocController.text = step1["b64AutreDoc"];
-      step1B64CertifNonGageController.text = step1["b64CertifNonGage"];
-      step1B64CarnetEntretController.text = step1["b64CarnetEntret"] ;
-    });
+    log('step1 =>>>'+step1);
+
+
+    if (step1.length > 0) {
+      setState(() {
+        step1MarqueController.text = step1.length > 0 ? step1["marque"]  : '';
+        step1ModeleController.text = step1.length > 0 ? step1["modele"]  : '';
+        step1YearController.text = step1.length > 0 ? step1["annee"]  : '';
+        step1ImmatController.text = step1.length > 0 ? step1["kilometrage"]  : '';
+        step1KilomController.text = step1.length > 0 ? step1["immatriculation"]  : '';
+        step1VinController.text =  step1.length > 0 ? step1["numeroVin"]  : '';
+        step1B64CertifImmatController.text = step1.length > 0 ? step1["b64CertifImmat"]  : '';
+        step1B64ControleTechController.text = step1.length > 0 ? step1["b64ControleTech"]  : '';
+        step1AutreDocCommentairController.text = step1.length > 0 ? step1["AutreDocCommentair"]  : '';
+        step1B64AutreDocController.text = step1.length > 0 ? step1["b64AutreDoc"]  : '';
+        step1B64CertifNonGageController.text = step1.length > 0 ? step1["b64CertifNonGage"]  : '';
+        step1B64CarnetEntretController.text = step1.length > 0 ? step1["b64CarnetEntret"]  : '';
+      });
+    } else {
+      setState(() {
+        step1MarqueController.text ='';
+        step1ModeleController.text = '';
+        step1YearController.text = '';
+        step1ImmatController.text = '';
+        step1KilomController.text = '';
+        step1VinController.text =  '';
+        step1B64CertifImmatController.text = '';
+        step1B64ControleTechController.text = '';
+        step1AutreDocCommentairController.text =  '';
+        step1B64AutreDocController.text = '';
+        step1B64CertifNonGageController.text =  '';
+        step1B64CarnetEntretController.text =  '';
+      });
+    }
+
   }
   // handle Object str
   decodeObject(prefs, objectStr){
-    final objeStr = prefs.getString(objectStr);
-    return json.decode(objeStr!);
+    log("objectStr =>"+objectStr);
+   // final objeStr = prefs.getString(objectStr);
+   // return json.decode(objeStr!);
   }
   void encode(SharedPreferences prefs, Object object, String objName) {
     final objsonStr = json.encode(object);
